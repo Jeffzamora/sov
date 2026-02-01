@@ -1,0 +1,262 @@
+/* =========================================================
+   SOV Responsive Hardening (mobile-first) for AdminLTE 3
+   ========================================================= */
+
+/* Base helpers */
+:root{
+  --sov-radius: 14px;
+  --sov-shadow: 0 12px 30px rgba(0,0,0,.10);
+  --sov-border: rgba(0,0,0,.08);
+  --sov-muted: #6c757d;
+}
+
+.table-responsive{
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Cards spacing */
+.content-wrapper .card{ margin-bottom: 1rem; }
+
+/* Botones de acciones: más usables en móvil */
+.sov-btn-group{ display:flex; flex-wrap:wrap; gap: .25rem; }
+.sov-btn-group .btn{ margin:0; white-space:nowrap; }
+
+/* Improve focus visibility (accessibility) */
+a:focus, button:focus, input:focus, select:focus, textarea:focus{
+  outline: none;
+}
+.form-control:focus{
+  box-shadow: 0 0 0 .2rem rgba(29,54,182,.18);
+}
+
+/* -----------------------------
+   XS (phones)
+------------------------------ */
+@media (max-width: 575.98px){
+  .content-header h1{ font-size: 1.25rem; }
+  .card-title{ font-size: 1rem; }
+
+  .modal-dialog{ margin: .5rem; width: calc(100% - 1rem); }
+  .modal-body{ max-height: calc(100vh - 12rem); overflow-y: auto; }
+
+  /* No global .btn wrap (evita romper DataTables); solo dentro del contenido */
+  .content-wrapper .btn,
+  .modal .btn{ white-space: normal; }
+
+  .table td, .table th{ padding: .35rem; }
+
+  /* DataTables filter input full width on mobile */
+  .dataTables_wrapper .dataTables_filter{
+    width: 100%;
+    text-align: left;
+  }
+  .dataTables_wrapper .dataTables_filter label{
+    width: 100%;
+    display: block;
+  }
+  .dataTables_wrapper .dataTables_filter input{
+    width: 100% !important;
+    margin-left: 0 !important;
+  }
+
+  /* DataTables buttons: wrap nicely */
+  .dataTables_wrapper .dt-buttons{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.25rem;
+    float:none !important;
+    margin-bottom:.5rem;
+  }
+  .dataTables_wrapper .dt-buttons .btn{
+    margin:0 !important;
+    padding: .4rem .6rem;
+    font-size: .9rem;
+    white-space: nowrap; /* botones export/print no deben romper */
+  }
+
+  /* Card padding a bit tighter */
+  .content-wrapper .card-body{ padding: .75rem; }
+}
+
+@media (min-width: 576px) and (max-width: 991.98px){
+  .content-header h1{ font-size: 1.4rem; }
+}
+
+/* -----------------------------
+   Login responsiveness (AdminLTE)
+------------------------------ */
+.login-page .login-box{ width: 100%; max-width: 420px; }
+.login-page img{ max-width: 100%; height: auto; }
+
+/* Optica-themed login */
+body.login-page.optica-login{
+  background:
+    radial-gradient(1200px 700px at 10% 10%, rgba(29,54,182,.18), transparent 60%),
+    radial-gradient(900px 600px at 90% 20%, rgba(0,150,136,.14), transparent 55%),
+    linear-gradient(180deg, #f7f9fc, #eef3fb);
+}
+.optica-login .login-box{ max-width: 900px; }
+.optica-login .optica-card{
+  border-radius: var(--sov-radius);
+  overflow: hidden;
+  box-shadow: var(--sov-shadow);
+  border: 1px solid rgba(0,0,0,.03);
+}
+.optica-login .optica-brand{ font-weight: 800; letter-spacing: .2px; }
+.optica-login .optica-subtitle{ color: var(--sov-muted); }
+.optica-login .optica-hero{
+  background: linear-gradient(135deg, rgba(29,54,182,.10), rgba(0,150,136,.10));
+}
+@media (max-width: 767.98px){
+  .optica-login .optica-hero{ display:none !important; }
+  .optica-login .login-box{ max-width: 440px; }
+}
+
+/* -----------------------------
+   Modals usability on small screens
+------------------------------ */
+@media (max-width: 575.98px){
+  .modal-dialog.modal-lg,
+  .modal-dialog.modal-xl{
+    max-width: calc(100% - 1rem);
+  }
+}
+
+/* Tables inside modals: sticky header + scroll */
+.modal .table-responsive{
+  max-height: 60vh;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.modal .table-responsive thead th{
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(0,0,0,.06);
+}
+@media (max-width: 575.98px){
+  .modal .table-responsive{ max-height: 55vh; }
+  .modal .table td, .modal .table th{ white-space: nowrap; }
+  .modal .table td .btn{ white-space: nowrap; }
+}
+
+/* -----------------------------
+   Loader (global) - honors aria-hidden
+------------------------------ */
+#sov-loader{
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,.72);
+  backdrop-filter: blur(2px);
+  z-index: 20000;
+}
+#sov-loader[aria-hidden="false"]{
+  display: flex;
+}
+#sov-loader .sov-loader-card{
+  width: min(92vw, 360px);
+  background: #fff;
+  border-radius: var(--sov-radius);
+  box-shadow: 0 12px 30px rgba(0,0,0,.12);
+  padding: 18px 18px 16px;
+  text-align: center;
+  border: 1px solid rgba(0,0,0,.03);
+}
+#sov-loader .sov-loader-logo{
+  width: 120px;
+  height: auto;
+  margin: 0 auto 10px;
+  display:block;
+}
+#sov-loader .sov-loader-title{
+  font-weight: 800;
+  margin: 0;
+  font-size: 1rem;
+}
+#sov-loader .sov-loader-sub{
+  color: var(--sov-muted);
+  margin: 6px 0 0;
+  font-size: .92rem;
+}
+#sov-loader .sov-loader-dots{
+  display:inline-flex;
+  gap:4px;
+  margin-left:6px;
+  vertical-align:middle;
+}
+#sov-loader .sov-loader-dots span{
+  width:6px; height:6px;
+  border-radius:50%;
+  background: rgba(29,54,182,.55);
+  display:block;
+  animation: sovdots 2.05s infinite ease-in-out;
+}
+#sov-loader .sov-loader-dots span:nth-child(2){ animation-delay: .15s; opacity:.8; }
+#sov-loader .sov-loader-dots span:nth-child(3){ animation-delay: .30s; opacity:.6; }
+#sov-loader .sov-loader-spin{
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  border: 4px solid rgba(29,54,182,.18);
+  border-top-color: rgba(29,54,182,.85);
+  margin: 14px auto 0;
+  animation: sovspin 1s linear infinite;
+}
+#sov-loader .sov-loader-glasses{
+  margin-top: 10px;
+  color: rgba(29,54,182,.9);
+  font-size: 1.35rem;
+}
+@keyframes sovspin{ to{ transform: rotate(360deg); } }
+@keyframes sovdots{
+  0%, 100% { transform: translateY(0); opacity: .55; }
+  50% { transform: translateY(-4px); opacity: 1; }
+}
+
+/* -----------------------------
+   Stacked tables (mobile) for modals
+   JS injects data-label from thead.
+------------------------------ */
+@media (max-width: 575.98px){
+  .modal table.sov-stack thead{ display:none; }
+  .modal table.sov-stack,
+  .modal table.sov-stack tbody,
+  .modal table.sov-stack tr,
+  .modal table.sov-stack td{ display:block; width:100%; }
+
+  .modal table.sov-stack tr{
+    margin: .5rem 0;
+    border: 1px solid var(--sov-border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .modal table.sov-stack td{
+    display:flex;
+    gap: .5rem;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: .5rem .65rem;
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+    white-space: normal !important;
+  }
+  .modal table.sov-stack td:last-child{ border-bottom:none; }
+
+  .modal table.sov-stack td::before{
+    content: attr(data-label);
+    font-weight: 800;
+    color: #495057;
+    min-width: 44%;
+  }
+  .modal table.sov-stack td .btn{ width:auto; }
+}
+
+@media (max-width: 991.98px){
+  .content .card[style*="position: sticky"]{ position: static !important; }
+}

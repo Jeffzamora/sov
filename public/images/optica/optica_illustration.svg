@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="420" viewBox="0 0 520 420">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1d36b6" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#009688" stop-opacity=".18"/>
+    </linearGradient>
+    <linearGradient id="lens" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1d36b6"/>
+      <stop offset="1" stop-color="#009688"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="520" height="420" rx="18" fill="url(#bg)"/>
+  <g transform="translate(60 70)">
+    <text x="0" y="0" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#1f2d3d">Gestión para Ópticas</text>
+    <text x="0" y="28" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#6c757d">Ventas, inventario, compras y proveedores</text>
+
+    <g transform="translate(0 70)">
+      <rect x="0" y="0" width="380" height="210" rx="16" fill="#ffffff" opacity=".9"/>
+      <path d="M90 105c30-40 70-60 120-60s90 20 120 60c-30 40-70 60-120 60s-90-20-120-60z" fill="none" stroke="url(#lens)" stroke-width="10" stroke-linejoin="round"/>
+      <circle cx="210" cy="105" r="30" fill="none" stroke="#1f2d3d" stroke-width="6" opacity=".55"/>
+      <circle cx="210" cy="105" r="10" fill="url(#lens)"/>
+      <path d="M40 160h120" stroke="#6c757d" stroke-width="6" stroke-linecap="round" opacity=".35"/>
+      <path d="M40 185h170" stroke="#6c757d" stroke-width="6" stroke-linecap="round" opacity=".25"/>
+      <path d="M40 60h200" stroke="#6c757d" stroke-width="8" stroke-linecap="round" opacity=".25"/>
+    </g>
+
+    <g transform="translate(0 310)">
+      <rect x="0" y="0" width="18" height="18" rx="4" fill="#1d36b6" opacity=".25"/>
+      <text x="28" y="14" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#1f2d3d">Acceso seguro con roles</text>
+      <rect x="200" y="0" width="18" height="18" rx="4" fill="#009688" opacity=".25"/>
+      <text x="228" y="14" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#1f2d3d">Listas rápidas en modales</text>
+    </g>
+  </g>
+</svg>
