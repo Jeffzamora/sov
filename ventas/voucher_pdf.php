@@ -18,7 +18,7 @@ if ($id <= 0) {
 }
 
 // Intentar Dompdf si existe
-$autoload = __DIR__ . '/../vendor/autoload.php';
+$autoload = __DIR__ . '../vendor/dompdf/autoload.inc.php';
 $hasDompdf = is_file($autoload);
 if ($hasDompdf) {
   require_once $autoload;

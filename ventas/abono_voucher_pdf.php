@@ -16,7 +16,7 @@ if ($id_pago <= 0) {
   exit;
 }
 
-$autoload = __DIR__ . '/../vendor/autoload.php';
+$autoload = __DIR__ . '../vendor/dompdf/autoload.inc.php';
 $hasDompdf = is_file($autoload);
 if ($hasDompdf) {
   require_once $autoload;

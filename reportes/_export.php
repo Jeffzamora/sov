@@ -41,7 +41,7 @@ if (!function_exists('report_export_pdf')) {
   {
     $filename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $filenameSinExt) . '.pdf';
 
-    $autoload = __DIR__ . '/../vendor/autoload.php';
+    $autoload = __DIR__ . '../vendor/dompdf/autoload.inc.php';
     if (is_file($autoload)) {
       require_once $autoload;
       $options = new \Dompdf\Options();

@@ -1,10 +1,13 @@
 <?php
 /**
  * @package dompdf
- * @link    https://github.com/dompdf/dompdf
+ * @link    http://dompdf.github.com/
+ * @author  Fabien Ménager <fabien.menager@gmail.com>
  * @license http://www.gnu.org/copyleft/lesser.html GNU Lesser General Public License
  */
 namespace Dompdf;
+
+use Dompdf\Frame;
 
 /**
  * Embeds Javascript into the PDF document
@@ -38,7 +41,7 @@ class JavascriptEmbedder
     }
 
     /**
-     * @param Frame $frame
+     * @param \Dompdf\Frame $frame
      */
     public function render(Frame $frame)
     {
