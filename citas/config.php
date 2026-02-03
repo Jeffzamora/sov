@@ -58,13 +58,6 @@ $dias = [
   <div class="content">
     <div class="container-fluid">
 
-      <?php if (!$hasHorario): ?>
-        <div class="alert alert-warning">
-          <strong>Falta la tabla de horario laboral.</strong><br>
-          Ejecuta el script: <code>db/migrations/040_citas.sql</code>.
-        </div>
-      <?php endif; ?>
-
       <div class="card card-outline card-primary">
         <div class="card-header">
           <h3 class="card-title"><i class="fas fa-clock"></i> Horario semanal</h3>

@@ -29,12 +29,25 @@ try {
   // 3) Validación + normalización
   $rol = input_str('rol', 50, true);
   $rol = trim($rol);
-  $rol = preg_match('/^[a-z0-9_]+\.[a-z0-9_]+$/', $rol);       // colapsa espacios
-  $rol = mb_strtoupper($rol, 'UTF-8');           // normaliza
+  $rol = mb_strtoupper($rol, 'UTF-8');
 
+  // longitud real
   if (mb_strlen($rol) < 2) {
     throw new RuntimeException('El nombre del rol es demasiado corto.');
   }
+
+  // formato permitido:
+  // ADMIN
+  // VENDEDOR
+  // CAJERO
+  // ventas.crear
+  // usuarios.ver
+  if (!preg_match('/^[A-Z0-9_]+(\.[A-Z0-9_]+)?$/', $rol)) {
+    throw new RuntimeException(
+      'El nombre del rol solo puede contener letras, números, "_" y opcionalmente "."'
+    );
+  }
+
 
   // 4) Evitar duplicados (pre-check)
   $stmt = $pdo->prepare("SELECT id_rol FROM tb_roles WHERE UPPER(rol) = UPPER(?) LIMIT 1");

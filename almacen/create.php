@@ -255,7 +255,7 @@ $today = date('Y-m-d');
                                         <div class="p-2 border rounded bg-light">
                                             <div class="d-flex justify-content-between">
                                                 <span class="text-muted">Ganancia</span>
-                                                <span class="font-weight-bold" id="mx_ganancia">$0.00</span>
+                                                <span class="font-weight-bold" id="mx_ganancia">C$0.00</span>
                                             </div>
                                             <div class="d-flex justify-content-between">
                                                 <span class="text-muted">Margen</span>
@@ -351,7 +351,7 @@ $today = date('Y-m-d');
             var g = (venta - compra);
             var m = (venta > 0) ? (g / venta) * 100 : 0;
 
-            document.getElementById('mx_ganancia').textContent = '$' + money(g);
+            document.getElementById('mx_ganancia').textContent = 'C$' + money(g);
             document.getElementById('mx_margen').textContent = (isFinite(m) ? m.toFixed(1) : '0.0') + '%';
         }
 
