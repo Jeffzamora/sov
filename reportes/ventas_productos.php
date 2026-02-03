@@ -84,7 +84,7 @@ if ($export === 'pdf') {
           <td style="border-bottom:1px solid #ddd;"><?php echo h($r['codigo'] ?? ''); ?></td>
           <td style="border-bottom:1px solid #ddd;"><?php echo h($r['nombre'] ?? ''); ?></td>
           <td align="right" style="border-bottom:1px solid #ddd;"><?php echo (int)($r['qty'] ?? 0); ?></td>
-          <td align="right" style="border-bottom:1px solid #ddd;">C$<?php echo number_format((float)($r['monto'] ?? 0), 2); ?></td>
+          <td align="right" style="border-bottom:1px solid #ddd;">$<?php echo number_format((float)($r['monto'] ?? 0), 2); ?></td>
         </tr>
       <?php endforeach; ?>
     </tbody>

@@ -36,7 +36,7 @@ try {
      LIMIT 2000
   ";
   $st = $pdo->prepare($sql);
-  $st->execute([':asof'=>C$asOf]);
+  $st->execute([':asof'=>$asOf]);
   $rows = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
   foreach ($rows as $r) {

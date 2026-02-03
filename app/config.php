@@ -50,7 +50,8 @@ define('DB_USER', getenv('DB_USER') ?: 'root');
 define('DB_PASS', getenv('DB_PASS') ?: '');
 
 // --- App ---
-define('APP_TZ', getenv('APP_TZ') ?: 'America/Los_Angeles');
+// Zona horaria del sistema (Nicaragua por defecto)
+define('APP_TZ', getenv('APP_TZ') ?: 'America/Managua');
 // Ajusta solo si instalas en otra carpeta. Por defecto: /sov
 define('APP_BASE_PATH', getenv('APP_BASE_PATH') ?: '/sov');
 
@@ -82,6 +83,10 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES   => false,
     ]);
+
+    // Alinea la sesión MySQL con Managua (UTC-06:00) para NOW()/CURRENT_TIMESTAMP
+    // Nota: Nicaragua no usa DST, así que el offset es estable.
+    $pdo->exec("SET time_zone = '-06:00'");
 } catch (PDOException $e) {
     // No expongas detalles de la DB al usuario final.
     error_log('DB connection error: ' . $e->getMessage());

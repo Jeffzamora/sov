@@ -11,7 +11,7 @@ if ($id_pago <= 0) {
 
 $stmt = $pdo->prepare("
   SELECT p.id_pago, p.id_venta, p.id_caja, p.fecha_pago, p.metodo_pago, p.monto, p.referencia, p.id_usuario,
-         v.nro_venta, v.fecha_venta, v.total, v.pagado_inicial, v.saldo_pendiente, v.estado AS estado_venta,
+         v.nro_venta, v.fecha_venta, v.total, v.saldo_pendiente, v.estado AS estado_venta,
          c.nombre, c.apellido, c.numero_documento
     FROM tb_ventas_pagos p
     INNER JOIN tb_ventas v ON v.id_venta = p.id_venta
@@ -69,15 +69,11 @@ $totalVenta = (float)($pay['total'] ?? 0);
 $monto = (float)($pay['monto'] ?? 0);
 
 // Calcula saldo antes/después usando el orden de id_pago (no requiere cambios de BD)
-// IMPORTANTE: toma en cuenta pagado_inicial de la venta (si fue mixto/credito).
 $prev = $pdo->prepare("SELECT COALESCE(SUM(monto),0) FROM tb_ventas_pagos WHERE id_venta=? AND id_pago < ?");
 $prev->execute([$id_venta, $id_pago]);
-$sumPrevPagos = (float)($prev->fetchColumn() ?? 0);
+$sumPrev = (float)($prev->fetchColumn() ?? 0);
 
-$pagadoInicial = (float)($pay['pagado_inicial'] ?? 0);
-$paidBefore = max(0.0, $pagadoInicial + $sumPrevPagos);
-
-$saldoAntes = max(0.0, $totalVenta - $paidBefore);
+$saldoAntes = max(0.0, $totalVenta - $sumPrev);
 $saldoDespues = max(0.0, $saldoAntes - $monto);
 $deudaCancelada = ($saldoDespues <= 0.00001);
 
@@ -85,7 +81,7 @@ $deudaCancelada = ($saldoDespues <= 0.00001);
 $PAPER_MM = 80; // 80 o 58
 
 // (Opcional) Moneda
-$CURRENCY = function_exists('currency_symbol') ? currency_symbol() : 'C$';
+$CURRENCY = 'C$';
 ?>
 <!doctype html>
 <html lang="es">

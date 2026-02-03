@@ -50,7 +50,7 @@ try {
      ORDER BY {$selectKey} ASC
   ";
   $st = $pdo->prepare($sql);
-  $st->execute([':from'=>C$from, ':to'=>C$to]);
+  $st->execute([':from'=>$from, ':to'=>$to]);
   $rows = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
 } catch (Throwable $e) {
   error_log('[reportes.ventas_rango] ' . $e->getMessage());
