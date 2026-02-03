@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 // Para evitar includes frágiles:
@@ -145,7 +146,7 @@ $low_stock_min_stock  = (int)($low_stock_min_stock ?? 0);
                       </tr>
                     </thead>
                     <tbody>
-                      <?php for ($i=0; $i<count($low5_labels); $i++): ?>
+                      <?php for ($i = 0; $i < count($low5_labels); $i++): ?>
                         <tr>
                           <td><?php echo htmlspecialchars((string)$low5_labels[$i], ENT_QUOTES, 'UTF-8'); ?></td>
                           <td class="text-right"><?php echo (int)($low5_values[$i] ?? 0); ?></td>
@@ -263,7 +264,7 @@ $low_stock_min_stock  = (int)($low_stock_min_stock ?? 0);
 <!-- Chart.js -->
 <script src="<?php echo $URL; ?>/public/templeates/AdminLTE-3.2.0/plugins/chart.js/Chart.min.js"></script>
 <script>
-  (function () {
+  (function() {
     if (typeof Chart === 'undefined') return;
 
     const ventas7Labels = <?php echo json_encode($ventas_7d_labels ?? [], JSON_UNESCAPED_UNICODE); ?>;
@@ -279,8 +280,24 @@ $low_stock_min_stock  = (int)($low_stock_min_stock ?? 0);
     if (ctx1) {
       new Chart(ctx1, {
         type: 'line',
-        data: { labels: ventas7Labels, datasets: [{ label: 'Ventas', data: ventas7Values, fill: false, tension: 0.25 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        data: {
+          labels: ventas7Labels,
+          datasets: [{
+            label: 'Ventas',
+            data: ventas7Values,
+            fill: false,
+            tension: 0.25
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
       });
     }
 
@@ -288,8 +305,21 @@ $low_stock_min_stock  = (int)($low_stock_min_stock ?? 0);
     if (ctx2) {
       new Chart(ctx2, {
         type: 'doughnut',
-        data: { labels: metLabels, datasets: [{ data: metValues }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        data: {
+          labels: metLabels,
+          datasets: [{
+            data: metValues
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
       });
     }
 
@@ -297,8 +327,22 @@ $low_stock_min_stock  = (int)($low_stock_min_stock ?? 0);
     if (ctx3) {
       new Chart(ctx3, {
         type: 'bar',
-        data: { labels: topLabels, datasets: [{ label: 'Cantidad', data: topValues }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+        data: {
+          labels: topLabels,
+          datasets: [{
+            label: 'Cantidad',
+            data: topValues
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
       });
     }
   })();

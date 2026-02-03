@@ -185,10 +185,10 @@ $PAPER_MM = 80; // 80 o 58
   <script class="no-print">
     // Opcional: auto-imprimir al abrir y cerrar luego
     // Descomenta si quieres flujo "click imprimir desde calendario"
-    window.addEventListener('load', () => {
-    setTimeout(() => window.print(), 250);
-    window.addEventListener('afterprint', () => setTimeout(() => window.close(), 250));
-    });
+   // window.addEventListener('load', () => {
+    //setTimeout(() => window.print(), 250);
+   // window.addEventListener('afterprint', () => setTimeout(() => window.close(), 250));
+   // });
   </script>
 </body>
 </html>

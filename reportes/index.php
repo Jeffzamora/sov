@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 $BASE_DIR = dirname(__DIR__);
@@ -7,7 +8,10 @@ require_once $BASE_DIR . '/layout/sesion.php';
 
 require_once $BASE_DIR . '/layout/parte1.php';
 
-function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
+function h($v): string
+{
+  return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
+}
 ?>
 
 <div class="content-wrapper">
@@ -36,6 +40,39 @@ function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'
       </div>
 
       <div class="row">
+
+        <!-- ✅ NUEVO: Control anual de exámenes -->
+        <div class="col-md-6 col-lg-4">
+          <div class="card card-outline card-info">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i class="fas fa-eye"></i> Control anual de exámenes
+              </h3>
+            </div>
+            <div class="card-body">
+              Clientes con <strong>más de 1 año</strong> desde su último examen o que están
+              <strong>próximos</strong> a cumplirlo (por ejemplo, ventana 30 días).
+            </div>
+            <div class="card-footer">
+              <a class="btn btn-info btn-sm" href="<?php echo $URL; ?>/reportes/clientes_control_examen.php">
+                Ver reporte
+              </a>
+
+              <!-- acceso rápido a filtros -->
+              <a class="btn btn-outline-danger btn-sm ml-1"
+                href="<?php echo $URL; ?>/reportes/clientes_control_examen.php?tipo=vencidos">
+                Vencidos
+              </a>
+
+              <a class="btn btn-outline-warning btn-sm ml-1"
+                href="<?php echo $URL; ?>/reportes/clientes_control_examen.php?tipo=proximos&window=30">
+                Próximos (30d)
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Existentes -->
         <div class="col-md-6 col-lg-4">
           <div class="card card-outline card-primary">
             <div class="card-header">
@@ -99,6 +136,7 @@ function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'
             </div>
           </div>
         </div>
+
       </div>
 
     </div>
