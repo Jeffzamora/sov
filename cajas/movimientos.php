@@ -126,6 +126,12 @@ function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'
   function money(n){
     return (Number(n)||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
   }
+  function fmtMonto(tipo, monto){
+    const t = String(tipo||'').toLowerCase();
+    const n = Math.abs(Number(monto)||0);
+    const sign = (t==='egreso') ? '-' : '+';
+    return sign + "C$" + money(n);
+  }
   function badgeEstado(estado){
     const e = String(estado||'activo').toLowerCase();
     if (e==='anulado') return '<span class="badge badge-danger">Anulado</span>';
@@ -184,7 +190,7 @@ function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'
           <td>${r.metodo_pago || ''}</td>\
           <td>${(r.concepto || '')}</td>\
           <td>${(r.referencia || '')}</td>\
-          <td class="text-right mono">$${money(r.monto)}</td>\
+          <td class="text-right mono">${fmtMonto(r.tipo, r.monto)}</td>\
           <td>${badgeEstado(estado)}</td>\
           <td>${btnAnular}</td>\
         </tr>`;

@@ -78,7 +78,7 @@ $efectivoEsperado = $caja ? round($montoInicial + $ventasEf + $abonosEf + $movIn
                   <div class="form-group">
                     <label>Monto inicial <span class="text-danger">*</span></label>
                     <div class="input-group">
-                      <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                      <div class="input-group-prepend"><span class="input-group-text">C$</span></div>
                       <input type="number" step="0.01" min="0" name="monto_inicial" class="form-control" required inputmode="decimal" placeholder="0.00">
                       <div class="invalid-feedback">Ingrese un monto válido.</div>
                     </div>
@@ -116,28 +116,28 @@ $efectivoEsperado = $caja ? round($montoInicial + $ventasEf + $abonosEf + $movIn
           <div class="col-md-3">
             <div class="card kpi"><div class="card-body">
               <div class="label">Monto inicial</div>
-              <p class="value mono">$<?php echo money($montoInicial); ?></p>
+              <p class="value mono">C$<?php echo money($montoInicial); ?></p>
               <div class="text-muted" style="font-size:.82rem;">Apertura: <?php echo h((string)($caja['fecha_apertura'] ?? '')); ?></div>
             </div></div>
           </div>
           <div class="col-md-3">
             <div class="card kpi"><div class="card-body">
               <div class="label">Ventas efectivo</div>
-              <p class="value mono">$<?php echo money($ventasEf); ?></p>
+              <p class="value mono">C$<?php echo money($ventasEf); ?></p>
               <div class="text-muted" style="font-size:.82rem;">Contado</div>
             </div></div>
           </div>
           <div class="col-md-3">
             <div class="card kpi"><div class="card-body">
               <div class="label">Ventas depósito</div>
-              <p class="value mono">$<?php echo money($ventasDep); ?></p>
+              <p class="value mono">C$<?php echo money($ventasDep); ?></p>
               <div class="text-muted" style="font-size:.82rem;">Transferencias</div>
             </div></div>
           </div>
           <div class="col-md-3">
             <div class="card kpi"><div class="card-body">
               <div class="label">Efectivo esperado</div>
-              <p class="value mono">$<?php echo money($efectivoEsperado); ?></p>
+              <p class="value mono">C$<?php echo money($efectivoEsperado); ?></p>
               <div class="text-muted" style="font-size:.82rem;">Para cierre</div>
             </div></div>
           </div>
@@ -150,13 +150,13 @@ $efectivoEsperado = $caja ? round($montoInicial + $ventasEf + $abonosEf + $movIn
               <div class="card-body">
                 <div class="row">
                   <div class="col-6 text-muted">Crédito (saldo)</div>
-                  <div class="col-6 text-right mono"><strong>$<?php echo money($tot['ventas_credito'] ?? 0); ?></strong></div>
+                  <div class="col-6 text-right mono"><strong>C$<?php echo money($tot['ventas_credito'] ?? 0); ?></strong></div>
                   <div class="col-6 text-muted">Abonos total</div>
-                  <div class="col-6 text-right mono"><strong>$<?php echo money($tot['abonos_total'] ?? 0); ?></strong></div>
+                  <div class="col-6 text-right mono"><strong>C$<?php echo money($tot['abonos_total'] ?? 0); ?></strong></div>
                   <div class="col-6 text-muted">Mov. ingresos</div>
-                  <div class="col-6 text-right mono"><strong>$<?php echo money($tot['mov_ingresos'] ?? 0); ?></strong></div>
+                  <div class="col-6 text-right mono"><strong>+C$<?php echo money($tot['mov_ingresos'] ?? 0); ?></strong></div>
                   <div class="col-6 text-muted">Mov. egresos</div>
-                  <div class="col-6 text-right mono"><strong>$<?php echo money($tot['mov_egresos'] ?? 0); ?></strong></div>
+                  <div class="col-6 text-right mono"><strong>-C$<?php echo money($tot['mov_egresos'] ?? 0); ?></strong></div>
                 </div>
               </div>
             </div>
@@ -188,7 +188,7 @@ $efectivoEsperado = $caja ? round($montoInicial + $ventasEf + $abonosEf + $movIn
                       <div class="form-group col-md-4">
                         <label>Monto *</label>
                         <div class="input-group">
-                          <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                          <div class="input-group-prepend"><span class="input-group-text">C$</span></div>
                           <input type="number" step="0.01" min="0.01" name="monto" class="form-control" required inputmode="decimal" placeholder="0.00">
                         </div>
                       </div>
@@ -220,7 +220,7 @@ $efectivoEsperado = $caja ? round($montoInicial + $ventasEf + $abonosEf + $movIn
                   <div class="alert alert-warning mb-0">No tiene permisos para cerrar caja.</div>
                 <?php else: ?>
                   <div class="alert alert-light">
-                    <div class="d-flex justify-content-between"><span class="text-muted">Efectivo esperado</span><strong class="mono">$<?php echo money($efectivoEsperado); ?></strong></div>
+                    <div class="d-flex justify-content-between"><span class="text-muted">Efectivo esperado</span><strong class="mono">C$<?php echo money($efectivoEsperado); ?></strong></div>
                   </div>
                   <form id="form-cierre" action="<?php echo $URL; ?>/app/controllers/cajas/cierre.php" method="post" novalidate>
                     <?php echo csrf_field(); ?>
@@ -229,13 +229,13 @@ $efectivoEsperado = $caja ? round($montoInicial + $ventasEf + $abonosEf + $movIn
                       <div class="form-group col-md-4">
                         <label>Efectivo contado *</label>
                         <div class="input-group">
-                          <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                          <div class="input-group-prepend"><span class="input-group-text">C$</span></div>
                           <input id="monto_cierre_efectivo" name="monto_cierre_efectivo" type="number" step="0.01" min="0" class="form-control" required inputmode="decimal" placeholder="0.00">
                         </div>
                       </div>
                       <div class="form-group col-md-4">
                         <label>Diferencia</label>
-                        <input id="dif_cierre" type="text" class="form-control mono" value="$0.00" readonly>
+                        <input id="dif_cierre" type="text" class="form-control mono" value="C$0.00" readonly>
                         <small id="dif_hint" class="text-muted">Cuadre</small>
                       </div>
                       <div class="form-group col-md-4">

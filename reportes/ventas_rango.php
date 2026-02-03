@@ -50,7 +50,7 @@ try {
      ORDER BY {$selectKey} ASC
   ";
   $st = $pdo->prepare($sql);
-  $st->execute([':from'=>$from, ':to'=>$to]);
+  $st->execute([':from'=>C$from, ':to'=>C$to]);
   $rows = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
 } catch (Throwable $e) {
   error_log('[reportes.ventas_rango] ' . $e->getMessage());
@@ -95,10 +95,10 @@ if ($export === 'pdf') {
       <tr>
         <td style="border-bottom:1px solid #ddd;"><?php echo h($r['periodo'] ?? ''); ?></td>
         <td align="right" style="border-bottom:1px solid #ddd;"><?php echo (int)($r['cant_ventas'] ?? 0); ?></td>
-        <td align="right" style="border-bottom:1px solid #ddd;">$<?php echo number_format((float)($r['subtotal'] ?? 0), 2); ?></td>
-        <td align="right" style="border-bottom:1px solid #ddd;">$<?php echo number_format((float)($r['descuento'] ?? 0), 2); ?></td>
-        <td align="right" style="border-bottom:1px solid #ddd;">$<?php echo number_format((float)($r['impuesto'] ?? 0), 2); ?></td>
-        <td align="right" style="border-bottom:1px solid #ddd;">$<?php echo number_format((float)($r['total'] ?? 0), 2); ?></td>
+        <td align="right" style="border-bottom:1px solid #ddd;">C$<?php echo number_format((float)($r['subtotal'] ?? 0), 2); ?></td>
+        <td align="right" style="border-bottom:1px solid #ddd;">C$<?php echo number_format((float)($r['descuento'] ?? 0), 2); ?></td>
+        <td align="right" style="border-bottom:1px solid #ddd;">C$<?php echo number_format((float)($r['impuesto'] ?? 0), 2); ?></td>
+        <td align="right" style="border-bottom:1px solid #ddd;">C$<?php echo number_format((float)($r['total'] ?? 0), 2); ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>
@@ -181,10 +181,10 @@ if ($export === 'pdf') {
                   <tr>
                     <td><?php echo h($r['periodo'] ?? ''); ?></td>
                     <td class="text-right"><?php echo (int)($r['cant_ventas'] ?? 0); ?></td>
-                    <td class="text-right">$<?php echo number_format((float)($r['subtotal'] ?? 0), 2); ?></td>
-                    <td class="text-right">$<?php echo number_format((float)($r['descuento'] ?? 0), 2); ?></td>
-                    <td class="text-right">$<?php echo number_format((float)($r['impuesto'] ?? 0), 2); ?></td>
-                    <td class="text-right font-weight-bold">$<?php echo number_format((float)($r['total'] ?? 0), 2); ?></td>
+                    <td class="text-right">C$<?php echo number_format((float)($r['subtotal'] ?? 0), 2); ?></td>
+                    <td class="text-right">C$<?php echo number_format((float)($r['descuento'] ?? 0), 2); ?></td>
+                    <td class="text-right">C$<?php echo number_format((float)($r['impuesto'] ?? 0), 2); ?></td>
+                    <td class="text-right font-weight-bold">C$<?php echo number_format((float)($r['total'] ?? 0), 2); ?></td>
                   </tr>
                   <?php endforeach; ?>
                 </tbody>

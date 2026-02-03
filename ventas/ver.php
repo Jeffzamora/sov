@@ -55,6 +55,19 @@ $pagadoExtra = 0.0;
 foreach ($pagos as $p) $pagadoExtra += (float)($p['monto'] ?? 0);
 $totalPagado = max(0, $pagadoInicial + $pagadoExtra);
 
+// Historial de abonos con saldo antes/después
+$pagosHist = [];
+$saldoRun = max(0.0, $totalVenta - $pagadoInicial);
+foreach ($pagos as $p) {
+  $m = (float)($p['monto'] ?? 0);
+  $antes = $saldoRun;
+  $desp = max(0.0, $saldoRun - $m);
+  $p['_saldo_antes'] = $antes;
+  $p['_saldo_despues'] = $desp;
+  $pagosHist[] = $p;
+  $saldoRun = $desp;
+}
+
 $ventaActiva = (($venta['estado'] ?? '') === 'activa');
 $deudaCancelada = ($saldoPendiente <= 0.00001);
 
@@ -320,6 +333,8 @@ function badge_metodo(string $m): string
                       <th>Fecha</th>
                       <th>Método</th>
                       <th class="text-right">Monto</th>
+                      <th class="text-right">Saldo antes</th>
+                      <th class="text-right">Saldo después</th>
                       <th>Ref</th>
                       <th style="width:160px"></th>
                     </tr>
@@ -327,10 +342,10 @@ function badge_metodo(string $m): string
                   <tbody>
                     <?php if (!$pagos): ?>
                       <tr>
-                        <td colspan="5" class="text-center text-muted p-3">Sin pagos registrados.</td>
+                        <td colspan="7" class="text-center text-muted p-3">Sin pagos registrados.</td>
                       </tr>
                     <?php else: ?>
-                      <?php foreach ($pagos as $p): ?>
+                      <?php foreach ($pagosHist as $p): ?>
                         <tr>
                           <td class="text-muted"><?php echo h($p['fecha_pago'] ?? ''); ?></td>
                           <td><span class="badge badge-light"><?php echo h($p['metodo_pago'] ?? ''); ?></span></td>
@@ -413,6 +428,8 @@ function badge_metodo(string $m): string
                         <th>Fecha</th>
                         <th>Método</th>
                         <th class="text-right">Monto</th>
+                      <th class="text-right">Saldo antes</th>
+                      <th class="text-right">Saldo después</th>
                         <th>Referencia</th>
                         <th>Motivo</th>
                       </tr>

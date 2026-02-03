@@ -36,7 +36,7 @@ try {
      LIMIT 2000
   ";
   $st = $pdo->prepare($sql);
-  $st->execute([':asof'=>$asOf]);
+  $st->execute([':asof'=>C$asOf]);
   $rows = $st->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
   foreach ($rows as $r) {
@@ -80,11 +80,11 @@ if ($export === 'pdf') {
 
   <table width="100%" cellspacing="0" cellpadding="6" style="border-collapse:collapse;font-size:12px;margin-bottom:10px;">
     <tr>
-      <td><strong>0-7</strong>: $<?php echo number_format($sum['b7'],2); ?></td>
-      <td><strong>8-15</strong>: $<?php echo number_format($sum['b15'],2); ?></td>
-      <td><strong>16-30</strong>: $<?php echo number_format($sum['b30'],2); ?></td>
-      <td><strong>31+</strong>: $<?php echo number_format($sum['b31'],2); ?></td>
-      <td><strong>Total</strong>: $<?php echo number_format($sum['total'],2); ?></td>
+      <td><strong>0-7</strong>: C$<?php echo number_format($sum['b7'],2); ?></td>
+      <td><strong>8-15</strong>: C$<?php echo number_format($sum['b15'],2); ?></td>
+      <td><strong>16-30</strong>: C$<?php echo number_format($sum['b30'],2); ?></td>
+      <td><strong>31+</strong>: C$<?php echo number_format($sum['b31'],2); ?></td>
+      <td><strong>Total</strong>: C$<?php echo number_format($sum['total'],2); ?></td>
     </tr>
   </table>
 
@@ -107,7 +107,7 @@ if ($export === 'pdf') {
         <td align="right" style="border-bottom:1px solid #ddd;"><?php echo (int)($r['dias'] ?? 0); ?></td>
         <td style="border-bottom:1px solid #ddd;"><?php echo h($r['metodo_pago'] ?? ''); ?></td>
         <td style="border-bottom:1px solid #ddd;"><?php echo h($cliente); ?></td>
-        <td align="right" style="border-bottom:1px solid #ddd;">$<?php echo number_format((float)($r['saldo_pendiente'] ?? 0),2); ?></td>
+        <td align="right" style="border-bottom:1px solid #ddd;">C$<?php echo number_format((float)($r['saldo_pendiente'] ?? 0),2); ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>
@@ -162,13 +162,13 @@ if ($export === 'pdf') {
 
       <div class="row">
         <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-info"><i class="fas fa-clock"></i></span>
-          <div class="info-box-content"><span class="info-box-text">0-7 días</span><span class="info-box-number">$<?php echo number_format($sum['b7'],2); ?></span></div></div></div>
+          <div class="info-box-content"><span class="info-box-text">0-7 días</span><span class="info-box-number">C$<?php echo number_format($sum['b7'],2); ?></span></div></div></div>
         <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-warning"><i class="fas fa-clock"></i></span>
-          <div class="info-box-content"><span class="info-box-text">8-15 días</span><span class="info-box-number">$<?php echo number_format($sum['b15'],2); ?></span></div></div></div>
+          <div class="info-box-content"><span class="info-box-text">8-15 días</span><span class="info-box-number">C$<?php echo number_format($sum['b15'],2); ?></span></div></div></div>
         <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-orange"><i class="fas fa-clock"></i></span>
-          <div class="info-box-content"><span class="info-box-text">16-30 días</span><span class="info-box-number">$<?php echo number_format($sum['b30'],2); ?></span></div></div></div>
+          <div class="info-box-content"><span class="info-box-text">16-30 días</span><span class="info-box-number">C$<?php echo number_format($sum['b30'],2); ?></span></div></div></div>
         <div class="col-md-3"><div class="info-box"><span class="info-box-icon bg-danger"><i class="fas fa-exclamation-triangle"></i></span>
-          <div class="info-box-content"><span class="info-box-text">31+ días</span><span class="info-box-number">$<?php echo number_format($sum['b31'],2); ?></span></div></div></div>
+          <div class="info-box-content"><span class="info-box-text">31+ días</span><span class="info-box-number">C$<?php echo number_format($sum['b31'],2); ?></span></div></div></div>
       </div>
 
       <div class="card">
@@ -201,8 +201,8 @@ if ($export === 'pdf') {
                     <td><?php echo h($r['metodo_pago'] ?? ''); ?></td>
                     <td><?php echo h($cliente); ?></td>
                     <td><?php echo h($r['numero_documento'] ?? ''); ?></td>
-                    <td class="text-right">$<?php echo number_format((float)($r['total'] ?? 0),2); ?></td>
-                    <td class="text-right font-weight-bold">$<?php echo number_format((float)($r['saldo_pendiente'] ?? 0),2); ?></td>
+                    <td class="text-right">C$<?php echo number_format((float)($r['total'] ?? 0),2); ?></td>
+                    <td class="text-right font-weight-bold">C$<?php echo number_format((float)($r['saldo_pendiente'] ?? 0),2); ?></td>
                   </tr>
                   <?php endforeach; ?>
                 </tbody>

@@ -926,3 +926,55 @@ if (!function_exists('db_column_exists')) {
         }
     }
 }
+
+// =========================
+// Moneda / Formateo dinero
+// =========================
+if (!defined('APP_CURRENCY')) {
+    // Moneda por defecto (Nicaragua): Córdoba
+    define('APP_CURRENCY', 'C$');
+}
+
+if (!function_exists('currency_symbol')) {
+    function currency_symbol(): string
+    {
+        return (string)(defined('APP_CURRENCY') ? APP_CURRENCY : 'C$');
+    }
+}
+
+if (!function_exists('money_fmt')) {
+    /**
+     * Formatea un monto con 2 decimales.
+     * - $withSymbol: incluye el prefijo de moneda (ej: C$).
+     * - $forceSign: null => sin signo, true => siempre +/-, false => solo negativo.
+     */
+    function money_fmt($amount, bool $withSymbol = true, ?bool $forceSign = null): string
+    {
+        $n = (float)($amount ?? 0);
+        $abs = number_format(abs($n), 2, '.', ',');
+        $sign = '';
+        if ($forceSign === true) {
+            $sign = ($n < 0) ? '-' : '+';
+        } elseif ($forceSign === false) {
+            $sign = ($n < 0) ? '-' : '';
+        }
+        $cur = currency_symbol();
+        return ($sign !== '' ? $sign : '') . ($withSymbol ? $cur : '') . $abs;
+    }
+}
+
+if (!function_exists('money_signed_by_tipo')) {
+    /**
+     * Para movimientos: si $tipo = 'egreso' -> negativo, si 'ingreso' -> positivo.
+     * Monto en BD normalmente viene positivo.
+     */
+    function money_signed_by_tipo(string $tipo, $monto, bool $withSymbol = true): string
+    {
+        $t = strtolower(trim($tipo));
+        $n = (float)($monto ?? 0);
+        if ($t === 'egreso') $n = -abs($n);
+        else $n = abs($n); // ingreso
+        return money_fmt($n, $withSymbol, true);
+    }
+}
+
