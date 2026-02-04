@@ -190,7 +190,7 @@ function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'
           <td>${r.metodo_pago || ''}</td>\
           <td>${(r.concepto || '')}</td>\
           <td>${(r.referencia || '')}</td>\
-          <td class="text-right mono">$${money(r.monto)}</td>\
+          <td class="text-right mono">C$${money(r.monto)}</td>\
           <td>${badgeEstado(estado)}</td>\
           <td>${btnAnular}</td>\
         </tr>`;

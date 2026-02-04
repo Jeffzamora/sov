@@ -428,8 +428,8 @@ function badge_metodo(string $m): string
                         <th>Fecha</th>
                         <th>Método</th>
                         <th class="text-right">Monto</th>
-                        <th class="text-right">Saldo antes</th>
-                        <th class="text-right">Saldo después</th>
+                      <th class="text-right">Saldo antes</th>
+                      <th class="text-right">Saldo después</th>
                         <th>Referencia</th>
                         <th>Motivo</th>
                       </tr>
@@ -523,19 +523,19 @@ function badge_metodo(string $m): string
                   </tr>
                 </thead>
                 <tbody>
-                  <?php foreach ($items as $it): ?>
-                    <tr>
-                      <td>
-                        <input type="checkbox" class="js-dev-check">
-                      </td>
-                      <td><?php echo h($it['producto'] ?? ''); ?></td>
-                      <td class="text-right"><?php echo (int)($it['cantidad'] ?? 0); ?></td>
-                      <td class="text-right">
-                        <input type="hidden" name="id_producto[]" value="<?php echo (int)($it['id_producto'] ?? 0); ?>">
-                        <input type="number" class="form-control form-control-sm js-dev-qty" name="cantidad[]" min="0" step="1" value="0" style="max-width:120px; display:inline-block;" disabled>
-                      </td>
-                    </tr>
-                  <?php endforeach; ?>
+                <?php foreach ($items as $it): ?>
+                  <tr>
+                    <td>
+                      <input type="checkbox" class="js-dev-check">
+                    </td>
+                    <td><?php echo h($it['producto'] ?? ''); ?></td>
+                    <td class="text-right"><?php echo (int)($it['cantidad'] ?? 0); ?></td>
+                    <td class="text-right">
+                      <input type="hidden" name="id_producto[]" value="<?php echo (int)($it['id_producto'] ?? 0); ?>">
+                      <input type="number" class="form-control form-control-sm js-dev-qty" name="cantidad[]" min="0" step="1" value="0" style="max-width:120px; display:inline-block;" disabled>
+                    </td>
+                  </tr>
+                <?php endforeach; ?>
                 </tbody>
               </table>
             </div>
