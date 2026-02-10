@@ -45,6 +45,7 @@ if (!$v) {
 
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $URL; ?>/public/images/optica/icon_bajo.png">
     <title>Factura #<?= h($v['id_venta']) ?></title>
     <style>
         body {

@@ -82,7 +82,7 @@ $low_stock_min_stock  = (int)($low_stock_min_stock ?? 0);
             <div class="card-header">
               <h3 class="card-title"><i class="fas fa-chart-area"></i> Ventas últimos 7 días</h3>
               <div class="card-tools">
-                <span class="badge badge-light">Hoy: $<?php echo number_format($ventas_hoy_monto, 2); ?> (<?php echo (int)$ventas_hoy_count; ?>)</span>
+                <span class="badge badge-light">Hoy: C$<?php echo number_format($ventas_hoy_monto, 2); ?> (<?php echo (int)$ventas_hoy_count; ?>)</span>
               </div>
             </div>
             <div class="card-body">
@@ -96,7 +96,7 @@ $low_stock_min_stock  = (int)($low_stock_min_stock ?? 0);
             <div class="card-header">
               <h3 class="card-title"><i class="fas fa-chart-pie"></i> Ventas por método (30 días)</h3>
               <div class="card-tools">
-                <span class="badge badge-light">Total histórico: $<?php echo number_format($ventas_total_monto, 2); ?></span>
+                <span class="badge badge-light">Total histórico: C$<?php echo number_format($ventas_total_monto, 2); ?></span>
               </div>
             </div>
             <div class="card-body">

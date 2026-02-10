@@ -13,10 +13,6 @@ if (!function_exists('report_export_csv')) {
   function report_export_csv(string $filenameSinExt, array $headers, array $rows): void
   {
     $filename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $filenameSinExt) . '.csv';
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="' . $filename . '"');
-    header('Pragma: no-cache');
-    header('Expires: 0');
 
     $out = fopen('php://output', 'wb');
     // UTF-8 BOM para Excel
@@ -58,7 +54,6 @@ if (!function_exists('report_export_pdf')) {
     }
 
     // Fallback: HTML imprimible (usuario puede "Guardar como PDF")
-    header('Content-Type: text/html; charset=utf-8');
     echo "<!doctype html><html lang='es'><head><meta charset='utf-8'><title>" . htmlspecialchars($filename, ENT_QUOTES, 'UTF-8') . "</title>";
     echo "<style>@media print{.no-print{display:none!important} body{background:#fff}}</style>";
     echo "</head><body>";
