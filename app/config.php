@@ -660,7 +660,7 @@ function optica_info(): array
     return [
         'nombre'    => 'Óptica Alta Vision',
         'telefono'  => '+505 8173 1664',
-        'direccion' => 'Masaya 1 C. al Este frente a Farmacia Saba',
+        'direccion' => 'Cruz Blanca 25 Vrs al Sur',
         'web'       => '',
         'ruc'       => 'Ruc: 4020809910000X',
         'logo'      => $URL . '/public/images/optica/logo_bajo.png',
@@ -983,3 +983,8 @@ if (!function_exists('money_signed_by_tipo')) {
     }
 }
 
+
+// --- Auditoría (tb_auditoria) ---
+if (is_file(__DIR__ . '/Helpers/auditoria.php')) {
+    require_once __DIR__ . '/Helpers/auditoria.php';
+}

@@ -452,32 +452,77 @@ function badge_metodo(string $m): string
 
             <div class="tab-pane fade" id="pane-print" role="tabpanel">
               <div class="row">
-                <div class="col-md-6">
+                <div class="col-lg-4">
                   <div class="callout callout-info">
-                    <h5><i class="fas fa-receipt"></i> Voucher</h5>
-                    <p>Imprime el voucher en formato ticket.</p>
-                    <a class="btn btn-secondary" target="_blank"
-                      href="<?php echo $URL; ?>/ventas/voucher.php?id=<?php echo (int)$venta['id_venta']; ?>">
-                      Abrir Voucher
-                    </a>
-                    <a class="btn btn-outline-info ml-2" target="_blank"
-                      href="<?php echo $URL; ?>/ventas/voucher.php?id=<?php echo (int)$venta['id_venta']; ?>&formato=carta3">
-                      <i class="fas fa-file-alt"></i> Carta (3 copias)
-                    </a>
+                    <h5 class="mb-2"><i class="fas fa-receipt"></i> Voucher</h5>
+                    <p class="mb-2">Imprime el voucher en formato ticket.</p>
+                    <div class="btn-group">
+                      <a class="btn btn-secondary" target="_blank"
+                        href="<?php echo $URL; ?>/ventas/voucher.php?id=<?php echo (int)$venta['id_venta']; ?>">
+                        Abrir Voucher
+                      </a>
+                      <a class="btn btn-outline-info" target="_blank"
+                        href="<?php echo $URL; ?>/ventas/voucher.php?id=<?php echo (int)$venta['id_venta']; ?>&formato=carta3">
+                        <i class="fas fa-file-alt"></i> Carta (3 copias)
+                      </a>
+                    </div>
                   </div>
                 </div>
-                <div class="col-md-6">
+
+                <div class="col-lg-4">
                   <div class="callout callout-danger">
-                    <h5><i class="far fa-file-pdf"></i> PDF</h5>
-                    <p>Descarga e imprime el comprobante en PDF.</p>
-                    <a class="btn btn-outline-secondary" target="_blank"
-                      href="<?php echo $URL; ?>/ventas/voucher_pdf.php?id=<?php echo (int)$venta['id_venta']; ?>">
-                      Abrir PDF
-                    </a>
-                    <a class="btn btn-outline-danger ml-2" target="_blank"
-                      href="<?php echo $URL; ?>/ventas/voucher_pdf.php?id=<?php echo (int)$venta['id_venta']; ?>&formato=carta3">
-                      <i class="far fa-file-pdf"></i> Carta PDF
-                    </a>
+                    <h5 class="mb-2"><i class="far fa-file-pdf"></i> PDF (Voucher)</h5>
+                    <p class="mb-2">Descarga e imprime el comprobante en PDF.</p>
+                    <div class="btn-group">
+                      <a class="btn btn-outline-secondary" target="_blank"
+                        href="<?php echo $URL; ?>/ventas/voucher_pdf.php?id=<?php echo (int)$venta['id_venta']; ?>">
+                        Abrir PDF
+                      </a>
+                      <a class="btn btn-outline-danger" target="_blank"
+                        href="<?php echo $URL; ?>/ventas/voucher_pdf.php?id=<?php echo (int)$venta['id_venta']; ?>&formato=carta3">
+                        <i class="far fa-file-pdf"></i> Carta PDF
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-lg-4">
+                  <div class="callout callout-success">
+                    <h5 class="mb-2"><i class="fas fa-file-invoice"></i> Factura</h5>
+                    <p class="mb-2">Formato factura (A4) listo para cliente/contabilidad.</p>
+                    <div class="btn-group">
+                      <a class="btn btn-success" target="_blank"
+                        href="<?php echo $URL; ?>/ventas/factura.php?id=<?php echo (int)$venta['id_venta']; ?>">
+                        Abrir Factura
+                      </a>
+                      <a class="btn btn-outline-success" target="_blank"
+                        href="<?php echo $URL; ?>/ventas/factura_pdf.php?id=<?php echo (int)$venta['id_venta']; ?>">
+                        <i class="far fa-file-pdf"></i> Factura PDF
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row mt-2">
+                <div class="col-lg-12">
+                  <div class="callout callout-warning">
+                    <h5 class="mb-2"><i class="fas fa-list"></i> Histórico de pagos</h5>
+                    <p class="mb-2">Descarga el histórico de abonos con saldo antes/después por cada pago.</p>
+                    <div class="btn-group">
+                      <a class="btn btn-outline-warning" target="_blank"
+                        href="<?php echo $URL; ?>/ventas/pagos_historico.php?id=<?php echo (int)$venta['id_venta']; ?>">
+                        Ver Histórico
+                      </a>
+                      <a class="btn btn-outline-secondary" target="_blank"
+                        href="<?php echo $URL; ?>/ventas/pagos_historico_pdf.php?id=<?php echo (int)$venta['id_venta']; ?>">
+                        <i class="far fa-file-pdf"></i> PDF
+                      </a>
+                      <a class="btn btn-outline-success" target="_blank"
+                        href="<?php echo $URL; ?>/ventas/pagos_historico_csv.php?id=<?php echo (int)$venta['id_venta']; ?>">
+                        <i class="fas fa-file-csv"></i> CSV/Excel
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>

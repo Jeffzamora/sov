@@ -303,10 +303,10 @@ $CURRENCY = function_exists('currency_symbol') ? currency_symbol() : 'C$';
 
   <script class="no-print">
     // Opcional: auto-print + auto-close (útil si lo abres en ventana nueva)
-    window.addEventListener('load', () => {
-    setTimeout(() => window.print(), 250);
-    window.addEventListener('afterprint', () => setTimeout(() => window.close(), 250));
-    });
+   // window.addEventListener('load', () => {
+    //setTimeout(() => window.print(), 250);
+   // window.addEventListener('afterprint', () => setTimeout(() => window.close(), 250));
+   // });
   </script>
 </body>
 

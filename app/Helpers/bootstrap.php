@@ -26,3 +26,6 @@ require_once __DIR__ . '/../Security/Csrf.php';
 require_once __DIR__ . '/../Security/Input.php';
 require_once __DIR__ . '/../Security/Upload.php';
 require_once __DIR__ . '/../Middleware/require_post.php';
+
+// Auditoría
+require_once __DIR__ . '/auditoria.php';

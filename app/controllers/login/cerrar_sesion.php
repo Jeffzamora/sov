@@ -20,6 +20,11 @@ if ($id > 0) {
     }
 }
 
+// Auditoría
+if (function_exists('auditoria_log')) {
+    auditoria_log($pdo, 'LOGOUT', 'tb_usuarios', $id > 0 ? $id : null, 'Cierre de sesión');
+}
+
 // Limpia sesión
 $_SESSION = [];
 if (ini_get('session.use_cookies')) {

@@ -151,6 +151,12 @@ try {
         }
     }
     $pdo->commit();
+
+    // Auditoría
+    if (function_exists('auditoria_log')) {
+        auditoria_log($pdo, 'ANULAR', 'tb_ventas', $id_venta, 'Venta anulada');
+    }
+
     redirect($URL . '/ventas/ver.php?id=' . $id_venta, 'Venta anulada correctamente.', 'success');
 } catch (Throwable $e) {
     $pdo->rollBack();

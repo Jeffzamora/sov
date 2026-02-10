@@ -61,6 +61,11 @@ try {
 
   $newId = (int)$pdo->lastInsertId();
 
+  // Auditoría
+  if (function_exists('auditoria_log')) {
+    auditoria_log($pdo, 'CREAR', 'tb_usuarios', $newId, 'Usuario creado');
+  }
+
   if (function_exists('is_ajax_request') && is_ajax_request()) {
     json_response([
       'ok' => true,

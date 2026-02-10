@@ -83,6 +83,12 @@ try {
     $stmt = $pdo->prepare("UPDATE tb_usuarios SET estado = :st WHERE id_usuario = :id LIMIT 1");
     $stmt->execute([':st' => $estadoReq, ':id' => $id_usuario]);
 
+    // Auditoría
+    if (function_exists('auditoria_log')) {
+        $accion = ($estadoReq === 'INACTIVO') ? 'DESACTIVAR' : 'ACTIVAR';
+        auditoria_log($pdo, $accion, 'tb_usuarios', (int)$id_usuario, 'Cambio de estado a ' . $estadoReq);
+    }
+
     if ($stmt->rowCount() < 1) {
         throw new RuntimeException('No se pudo actualizar el estado.');
     }

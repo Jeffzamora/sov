@@ -150,6 +150,12 @@ try {
     // tb_ventas.pagado_inicial. Si insertamos aquí, se DUPLICAN los totales.
 
     $pdo->commit();
+
+    // Auditoría
+    if (function_exists('auditoria_log')) {
+        auditoria_log($pdo, 'CREAR', 'tb_ventas', $id_venta, 'Venta registrada');
+    }
+
     redirect($URL . '/ventas/voucher.php?id=' . $id_venta, 'Venta registrada.', 'success');
 } catch (Throwable $e) {
     $pdo->rollBack();

@@ -74,6 +74,12 @@ try {
 	}
 
     $pdo->commit();
+
+	// Auditoría
+	if (function_exists('auditoria_log')) {
+		auditoria_log($pdo, 'PAGO', 'tb_ventas_pagos', $id_pago, 'Abono registrado');
+	}
+
 	// Ir directo al voucher del abono (ideal para imprimir térmica)
 	redirect($URL . '/ventas/abono_voucher.php?id_pago=' . $id_pago, 'Abono registrado.', 'success');
 } catch (Throwable $e) {

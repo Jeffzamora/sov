@@ -59,6 +59,11 @@ try {
     ':id' => $id_usuario,
   ]);
 
+  // Auditoría
+  if (function_exists('auditoria_log')) {
+    auditoria_log($pdo, 'CAMBIAR_CLAVE', 'tb_usuarios', (int)$id_usuario, 'Contraseña actualizada');
+  }
+
   // Si el admin cambió su propia clave, actualiza su token en sesión para no “botarlo”
   if ($idSesion === (int)$id_usuario) {
     $_SESSION['sesion_token'] = $newTokenRaw;

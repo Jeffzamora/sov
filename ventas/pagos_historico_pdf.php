@@ -1,10 +1,9 @@
 <?php
 /**
- * Voucher/Recibo de Venta en PDF.
+ * Histórico de Pagos (Abonos) en PDF.
  *
  * - Si Dompdf está instalado (vendor/autoload.php), genera PDF real.
- * - Si no, muestra el voucher HTML (imprimible) para que el usuario pueda
- *   "Guardar como PDF" desde el navegador.
+ * - Si no, muestra el HTML imprimible para que el usuario pueda "Guardar como PDF".
  */
 
 require_once __DIR__ . '/../app/config.php';
@@ -26,42 +25,29 @@ if ($hasDompdf) {
 }
 
 if (!$hasDompdf) {
-  // Fallback: render HTML imprimible
-  // Reutilizamos el voucher HTML actual y pedimos al navegador imprimir/guardar PDF.
-  $_GET['id'] = $id; // por si el include lo lee
-  include __DIR__ . '/voucher.php';
+  $_GET['id'] = $id;
+  include __DIR__ . '/pagos_historico.php';
   echo "\n<script>try{setTimeout(()=>window.print(),250);}catch(e){}</script>";
   exit;
 }
 
-$formato = strtolower(trim((string)($_GET['formato'] ?? 'ticket')));
-
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-// Obtener HTML del voucher existente
 ob_start();
 $_GET['id'] = $id;
-include __DIR__ . '/voucher.php';
+include __DIR__ . '/pagos_historico.php';
 $html = ob_get_clean();
 
 $options = new Options();
 $options->set('isRemoteEnabled', true);
-$options->set('dpi', 72);
+$options->set('dpi', 96);
 
 $dompdf = new Dompdf($options);
-// Papel según formato
-if ($formato === 'carta3') {
-  $dompdf->setPaper('letter', 'portrait');
-} else {
-  // 80mm: 226.77pt. Para 58mm usa 164.41pt.
-  $paperWidthPt = 226.77;
-  $paperHeightPt = 1600;
-  $dompdf->setPaper([0, 0, $paperWidthPt, $paperHeightPt]);
-}
+$dompdf->setPaper('A4', 'portrait');
 $dompdf->loadHtml($html, 'UTF-8');
 $dompdf->render();
 
 header('Content-Type: application/pdf');
-header('Content-Disposition: inline; filename="ticket_venta_'.$id.'.pdf"');
+header('Content-Disposition: inline; filename="pagos_venta_' . $id . '.pdf"');
 echo $dompdf->output();

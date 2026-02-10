@@ -148,13 +148,13 @@ $activeMenu = [
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="<?php echo $URL; ?>/usuarios" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i><p>Listado</p>
+                  <i class="nav-icon fas fa-list"></i><p>Listado</p>
                 </a>
               </li>
               <?php if (function_exists('ui_can') ? ui_can('usuarios.crear') : true): ?>
                 <li class="nav-item">
                   <a href="<?php echo $URL; ?>/usuarios/create.php" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i><p>Crear usuario</p>
+                    <i class="nav-icon fas fa-plus"></i><p>Crear usuario</p>
                   </a>
                 </li>
               <?php endif; ?>
@@ -172,13 +172,13 @@ $activeMenu = [
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="<?php echo $URL; ?>/roles" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i><p>Listado</p>
+                  <i class="nav-icon fas fa-list"></i><p>Listado</p>
                 </a>
               </li>
               <?php if (function_exists('ui_can') ? ui_can('roles.crear') : true): ?>
                 <li class="nav-item">
                   <a href="<?php echo $URL; ?>/roles/create.php" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i><p>Crear rol</p>
+                    <i class="nav-icon fas fa-plus"></i><p>Crear rol</p>
                   </a>
                 </li>
               <?php endif; ?>
@@ -196,7 +196,7 @@ $activeMenu = [
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="<?php echo $URL; ?>/categorias" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i><p>Listado</p>
+                  <i class="nav-icon fas fa-list"></i><p>Listado</p>
                 </a>
               </li>
             </ul>
@@ -207,19 +207,19 @@ $activeMenu = [
           <?php if (function_exists('ui_can') ? ui_can('almacen.ver') : true): ?>
           <li class="nav-item <?php echo $activeMenu['almacen'] ? 'menu-open' : ''; ?>">
             <a href="#" class="nav-link <?php echo $activeMenu['almacen'] ? 'active' : ''; ?>">
-              <i class="nav-icon fas fa-list"></i>
+              <i class="nav-icon fas fa-warehouse"></i>
               <p>Almacén <i class="right fas fa-angle-left"></i></p>
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="<?php echo $URL; ?>/almacen" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i><p>Productos</p>
+                  <i class="nav-icon fas fa-list"></i><p>Productos</p>
                 </a>
               </li>
               <?php if (function_exists('ui_can') ? ui_can('almacen.crear') : true): ?>
                 <li class="nav-item">
                   <a href="<?php echo $URL; ?>/almacen/create.php" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i><p>Crear producto</p>
+                    <i class="nav-icon fas fa-plus"></i><p>Crear producto</p>
                   </a>
                 </li>
               <?php endif; ?>
@@ -237,13 +237,13 @@ $activeMenu = [
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="<?php echo $URL; ?>/compras" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i><p>Listado</p>
+                  <i class="nav-icon fas fa-list"></i><p>Listado</p>
                 </a>
               </li>
               <?php if (function_exists('ui_can') ? ui_can('compras.crear') : true): ?>
                 <li class="nav-item">
                   <a href="<?php echo $URL; ?>/compras/create.php" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i><p>Crear compra</p>
+                    <i class="nav-icon fas fa-plus"></i><p>Crear compra</p>
                   </a>
                 </li>
               <?php endif; ?>
@@ -255,13 +255,13 @@ $activeMenu = [
           <?php if (function_exists('ui_can') ? ui_can('proveedores.ver') : true): ?>
           <li class="nav-item <?php echo $activeMenu['proveedores'] ? 'menu-open' : ''; ?>">
             <a href="#" class="nav-link <?php echo $activeMenu['proveedores'] ? 'active' : ''; ?>">
-              <i class="nav-icon fas fa-car"></i>
+              <i class="nav-icon fas fa-truck"></i>
               <p>Proveedores <i class="right fas fa-angle-left"></i></p>
             </a>
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="<?php echo $URL; ?>/proveedores" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i><p>Listado</p>
+                  <i class="nav-icon fas fa-list"></i><p>Listado</p>
                 </a>
               </li>
             </ul>
@@ -278,7 +278,7 @@ $activeMenu = [
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="<?php echo $URL; ?>/clientes" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i><p>Listado</p>
+                  <i class="nav-icon fas fa-list"></i><p>Listado</p>
                 </a>
               </li>
             </ul>
@@ -295,13 +295,13 @@ $activeMenu = [
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="<?php echo $URL; ?>/citas" class="nav-link">
-                  <i class="far fa-circle nav-icon"></i><p>Calendario</p>
+                  <i class="nav-icon fas fa-calendar-day"></i><p>Calendario</p>
                 </a>
               </li>
               <?php if (function_exists('ui_can') ? (ui_can('citas.actualizar') || ui_can('horario.actualizar') || ui_can('horario.ver')) : true): ?>
                 <li class="nav-item">
                   <a href="<?php echo $URL; ?>/citas/config.php" class="nav-link">
-                    <i class="far fa-circle nav-icon"></i><p>Configurar horario</p>
+                    <i class="nav-icon fas fa-business-time"></i><p>Configurar horario</p>
                   </a>
                 </li>
               <?php endif; ?>

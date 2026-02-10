@@ -56,6 +56,11 @@ try {
     $_SESSION['sesion_id_rol'] = (int)($user['id_rol'] ?? 0);
     $_SESSION['sesion_token'] = $tokenRaw;
 
+    // Auditoría
+    if (function_exists('auditoria_log')) {
+        auditoria_log($pdo, 'LOGIN', 'tb_usuarios', (int)$user['id_usuario'], 'Inicio de sesión');
+    }
+
     if (is_ajax_request()) {
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode([
