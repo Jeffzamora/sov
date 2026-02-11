@@ -36,6 +36,12 @@ $activeMenu = [
   <meta name="theme-color" content="#0b2a4a">
   <title>Óptica Alta Vision | Sistema</title>
 
+  <!-- PWA -->
+  <link rel="manifest" href="<?php echo $URL; ?>/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" href="<?php echo $URL; ?>/public/pwa/icon-192.png">
+
   <!-- Favicons -->
   <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $URL; ?>/public/images/optica/icon_bajo.png">
   <link rel="apple-touch-icon" href="<?php echo $URL; ?>/public/images/optica/icon_alto.png">

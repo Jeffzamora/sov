@@ -37,9 +37,15 @@ if (!function_exists('report_export_pdf')) {
   {
     $filename = preg_replace('/[^a-zA-Z0-9_\-\.]/', '_', $filenameSinExt) . '.pdf';
 
-    $autoload = __DIR__ . '../vendor/dompdf/autoload.inc.php';
-    if (is_file($autoload)) {
+    // Intentar cargar Dompdf vía vendor/autoload.php (composer)
+    $autoload = dirname(__DIR__) . '/vendor/dompdf/autoload.inc.php';
+    $hasDompdf = is_file($autoload);
+    if ($hasDompdf) {
       require_once $autoload;
+      $hasDompdf = class_exists('Dompdf\\Dompdf');
+    }
+
+    if ($hasDompdf) {
       $options = new \Dompdf\Options();
       $options->set('isRemoteEnabled', true);
       $options->set('dpi', 96);

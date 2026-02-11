@@ -78,5 +78,15 @@ $year = date('Y');
 <!-- Helpers AJAX/Modales (SOV) -->
 <script src="<?php echo $URL; ?>/public/js/sov.ajax.js"></script>
 
+<!-- PWA Service Worker -->
+<script>
+  (function () {
+    if (!('serviceWorker' in navigator)) return;
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('<?php echo $URL; ?>/sw.js').catch(function(){ });
+    });
+  })();
+</script>
+
 </body>
 </html>
