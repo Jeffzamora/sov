@@ -329,6 +329,30 @@ $(function(){
     return { municipio:m[1], dob };
   }
 
+  function titleCaseName(s){
+    if(!s) return '';
+    let v = String(s).trim().replace(/\s+/g,' ');
+    v = v.toLowerCase();
+    // Capitaliza cada palabra (unicode)
+    try{
+      v = v.replace(/\b\p{L}/gu, (m)=>m.toUpperCase());
+    }catch(e){
+      // fallback básico
+      v = v.replace(/(^|\s)[a-záéíóúñ]/g, (m)=>m.toUpperCase());
+    }
+    return v;
+  }
+
+  function normalizeDoc(s){
+    if(!s) return '';
+    return String(s).toUpperCase().replace(/[\s\-]+/g,'');
+  }
+
+  function normalizePhone(s){
+    if(!s) return '';
+    return String(s).replace(/\D+/g,'');
+  }
+
   function applyDocRules($tipo, $doc, $dob){
     const tipo = String($tipo.val()||'');
     const dob = String($dob.val()||'');
@@ -360,9 +384,17 @@ $(function(){
   const $cTipo = $('#form-create-cliente select[name="tipo_documento"]');
   const $cDoc  = $('#form-create-cliente input[name="numero_documento"]');
   const $cDob  = $('#form-create-cliente input[name="fecha_nacimiento"]');
+  const $cNom  = $('#form-create-cliente input[name="nombre"]');
+  const $cApe  = $('#form-create-cliente input[name="apellido"]');
+  const $cCel  = $('#form-create-cliente input[name="celular"]');
+
+  $cNom.on('blur', ()=> $cNom.val(titleCaseName($cNom.val())));
+  $cApe.on('blur', ()=> $cApe.val(titleCaseName($cApe.val())));
+  $cCel.on('blur', ()=> $cCel.val(normalizePhone($cCel.val())));
   $cTipo.on('change', ()=> applyDocRules($cTipo,$cDoc,$cDob));
   $cDob.on('change', ()=> applyDocRules($cTipo,$cDoc,$cDob));
   $cDoc.on('blur', ()=>{
+    $cDoc.val(normalizeDoc($cDoc.val()));
     // Si es cédula NIC, autocompletar DOB si está vacío
     const tipo = String($cTipo.val()||'');
     if(tipo.toLowerCase().includes('cédula') || tipo.toLowerCase().includes('cedula') || tipo.toLowerCase()==='ced'){
@@ -375,9 +407,17 @@ $(function(){
   const $eTipo = $('#edit_tipo_documento');
   const $eDoc  = $('#edit_numero_documento');
   const $eDob  = $('#edit_fecha_nacimiento');
+  const $eNom  = $('#form-edit-cliente input[name="nombre"]');
+  const $eApe  = $('#form-edit-cliente input[name="apellido"]');
+  const $eCel  = $('#form-edit-cliente input[name="celular"]');
+
+  $eNom.on('blur', ()=> $eNom.val(titleCaseName($eNom.val())));
+  $eApe.on('blur', ()=> $eApe.val(titleCaseName($eApe.val())));
+  $eCel.on('blur', ()=> $eCel.val(normalizePhone($eCel.val())));
   $eTipo.on('change', ()=> applyDocRules($eTipo,$eDoc,$eDob));
   $eDob.on('change', ()=> applyDocRules($eTipo,$eDoc,$eDob));
   $eDoc.on('blur', ()=>{
+    $eDoc.val(normalizeDoc($eDoc.val()));
     const tipo = String($eTipo.val()||'');
     if(tipo.toLowerCase().includes('cédula') || tipo.toLowerCase().includes('cedula') || tipo.toLowerCase()==='ced'){
       const p = parseNicCedula($eDoc.val());

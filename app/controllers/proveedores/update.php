@@ -6,9 +6,9 @@ csrf_verify();
 
 try {
   $id_proveedor     = input_int('id_proveedor', true);
-  $nombre_proveedor = input_str('nombre_proveedor', 150, true);
-  $celular          = input_str('celular', 30, false);
-  $telefono         = input_str('telefono', 30, false);
+  $nombre_proveedor = format_person_name(input_str('nombre_proveedor', 150, true));
+  $celular          = input_phone('celular', false);
+  $telefono         = input_phone('telefono', false);
   $empresa          = input_str('empresa', 150, false);
   $email            = input_email('email', false);
   $direccion        = input_str('direccion', 255, false);
@@ -61,6 +61,10 @@ try {
   exit;
 
 } catch (Throwable $e) {
+  $friendly = pdo_exception_user_message($e);
+  if ($friendly) {
+    $e = new RuntimeException($friendly);
+  }
   if (is_ajax_request()) {
     json_response(['ok'=>false,'error'=>$e->getMessage()], 422);
   }

@@ -10,12 +10,12 @@ function is_ajax(): bool {
 
 try {
   $id_cliente = input_int('id_cliente');
-  $nombre = input_str('nombre', 120, true);
-  $apellido = input_str('apellido', 120, true);
+  $nombre = format_person_name(input_str('nombre', 120, true));
+  $apellido = format_person_name(input_str('apellido', 120, true));
   $tipo_documento = input_str('tipo_documento', 30, true);
   $numero_documento = input_str('numero_documento', 60, false);
   $fecha_nacimiento = input_date('fecha_nacimiento', false);
-  $celular = input_str('celular', 30, false);
+  $celular = input_phone('celular', false);
   $email = input_email('email', false); // allow null/empty
   $direccion = input_str('direccion', 255, false);
 
@@ -33,6 +33,17 @@ try {
     $tipo_documento = 'Menor';
   }
 
+  // Normalizar documento (sin guiones/espacios) para consistencia
+  if ($numero_documento !== '') {
+    if (function_exists('nic_cedula_normalize') && (
+      (stripos($tipo_documento, 'cédula') !== false) || (stripos($tipo_documento, 'cedula') !== false) || (strcasecmp($tipo_documento, 'CED') === 0)
+    )) {
+      $numero_documento = nic_cedula_normalize($numero_documento);
+    } else {
+      $numero_documento = doc_normalize_simple($numero_documento);
+    }
+  }
+
   $isCedulaNic = (stripos($tipo_documento, 'cédula') !== false) || (stripos($tipo_documento, 'cedula') !== false) || (strcasecmp($tipo_documento, 'CED') === 0);
   if (!$tipoIsMenor && !$isMenorByAge && $numero_documento !== '' && $isCedulaNic && function_exists('nic_cedula_parse')) {
     $p = nic_cedula_parse($numero_documento);
@@ -44,6 +55,8 @@ try {
           throw new RuntimeException('La fecha de nacimiento no coincide con la cédula NIC.');
         }
       }
+    } else {
+      throw new RuntimeException($p['error'] ?? 'Formato de cédula NIC inválido.');
     }
   }
 
@@ -94,6 +107,10 @@ try {
   exit;
 
 } catch (Throwable $e) {
+  $friendly = pdo_exception_user_message($e);
+  if ($friendly) {
+    $e = new RuntimeException($friendly);
+  }
   if (is_ajax()) {
     http_response_code(422);
     header('Content-Type: application/json; charset=utf-8');

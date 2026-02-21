@@ -674,14 +674,37 @@ function h(?string $v): string { return htmlspecialchars((string)$v, ENT_QUOTES,
 
   $('#citaFecha,#citaDuracion').on('change', refreshHoras);
 
+  function titleCaseName(s){
+    if(!s) return '';
+    let v = String(s).trim().replace(/\s+/g,' ');
+    v = v.toLowerCase();
+    try{ v = v.replace(/\b\p{L}/gu, (m)=>m.toUpperCase()); }
+    catch(e){ v = v.replace(/(^|\s)[a-záéíóúñ]/g, (m)=>m.toUpperCase()); }
+    return v;
+  }
+  function normalizeDoc(s){
+    if(!s) return '';
+    return String(s).toUpperCase().replace(/[\s\-]+/g,'');
+  }
+  function normalizePhone(s){
+    if(!s) return '';
+    return String(s).replace(/\D+/g,'');
+  }
+
+  // UI: formateo rápido al salir del input
+  $('#newNombre').on('blur', ()=> $('#newNombre').val(titleCaseName($('#newNombre').val())));
+  $('#newApellido').on('blur', ()=> $('#newApellido').val(titleCaseName($('#newApellido').val())));
+  $('#newCelular').on('blur', ()=> $('#newCelular').val(normalizePhone($('#newCelular').val())));
+  $('#newNumDoc').on('blur', ()=> $('#newNumDoc').val(normalizeDoc($('#newNumDoc').val())));
+
   $('#btnCrearCliente').on('click', function(){
     const data = {
       _csrf: CSRF,
-      nombre: ($('#newNombre').val()||'').trim(),
-      apellido: ($('#newApellido').val()||'').trim(),
+      nombre: titleCaseName(($('#newNombre').val()||'').trim()),
+      apellido: titleCaseName(($('#newApellido').val()||'').trim()),
       tipo_documento: ($('#newTipoDoc').val()||'').trim(),
-      numero_documento: ($('#newNumDoc').val()||'').trim(),
-      celular: ($('#newCelular').val()||'').trim(),
+      numero_documento: normalizeDoc(($('#newNumDoc').val()||'').trim()),
+      celular: normalizePhone(($('#newCelular').val()||'').trim()),
       email: ($('#newEmail').val()||'').trim(),
       direccion: ($('#newDireccion').val()||'').trim(),
     };

@@ -266,6 +266,110 @@ if (!function_exists('input_email')) {
     }
 }
 
+// -----------------------------------------------------------------------------
+// Normalización / validaciones comunes (nombres, teléfonos, documentos)
+// -----------------------------------------------------------------------------
+
+if (!function_exists('normalize_spaces')) {
+    function normalize_spaces(string $s): string
+    {
+        $s = trim($s);
+        $s = preg_replace('/\s+/u', ' ', $s) ?? $s;
+        return $s;
+    }
+}
+
+if (!function_exists('format_person_name')) {
+    /**
+     * Formatea nombres/apellidos: Primera letra de cada palabra en mayúscula,
+     * resto en minúscula, respetando tildes.
+     */
+    function format_person_name(string $s): string
+    {
+        $s = normalize_spaces($s);
+        if ($s === '') return '';
+        $s = mb_strtolower($s, 'UTF-8');
+        // MB_CASE_TITLE capitaliza cada palabra
+        $s = mb_convert_case($s, MB_CASE_TITLE, 'UTF-8');
+        return $s;
+    }
+}
+
+if (!function_exists('phone_normalize')) {
+    /**
+     * Normaliza un teléfono/celular removiendo guiones/espacios/paréntesis.
+     * Retorna solo dígitos para mantener consistencia en BD.
+     */
+    function phone_normalize(string $s): string
+    {
+        $s = trim($s);
+        if ($s === '') return '';
+        $digits = preg_replace('/\D+/', '', $s) ?? '';
+        return $digits;
+    }
+}
+
+if (!function_exists('phone_validate')) {
+    /**
+     * Valida teléfono normalizado. Acepta 8 a 15 dígitos.
+     */
+    function phone_validate(string $digits): bool
+    {
+        if ($digits === '') return true;
+        $len = strlen($digits);
+        return ($len >= 8 && $len <= 15);
+    }
+}
+
+if (!function_exists('input_phone')) {
+    function input_phone(string $key, bool $required = false, string $source = 'POST'): string
+    {
+        $raw = input_str($key, 40, $required, $source);
+        if ($raw === '' && !$required) return '';
+        $digits = phone_normalize($raw);
+        if (!phone_validate($digits)) {
+            http_response_code(422);
+            echo 'Número de celular/teléfono inválido. Use solo números (8 a 15 dígitos).';
+            exit;
+        }
+        return $digits;
+    }
+}
+
+if (!function_exists('doc_normalize_simple')) {
+    /**
+     * Normaliza un documento genérico: quita espacios/guiones y pone mayúsculas.
+     */
+    function doc_normalize_simple(string $s): string
+    {
+        $s = strtoupper(trim($s));
+        $s = preg_replace('/[\s\-]+/u', '', $s) ?? $s;
+        return $s;
+    }
+}
+
+if (!function_exists('pdo_exception_user_message')) {
+    /**
+     * Mapea errores comunes de MySQL (duplicate key, etc.) a mensajes amigables.
+     */
+    function pdo_exception_user_message(Throwable $e): ?string
+    {
+        if (!($e instanceof PDOException)) return null;
+        // 23000: integrity constraint violation (incluye duplicate key)
+        if (($e->getCode() ?? '') === '23000') {
+            $msg = $e->getMessage();
+            if (stripos($msg, 'ux_clientes_numero_documento') !== false) {
+                return 'Ya existe un cliente con ese número de documento.';
+            }
+            if (stripos($msg, 'ux_proveedores_email') !== false) {
+                return 'Ya existe un proveedor con ese email.';
+            }
+            return 'No se pudo guardar: el valor ya existe o viola una restricción.';
+        }
+        return null;
+    }
+}
+
 
 if (!function_exists('input_date')) {
     /**
