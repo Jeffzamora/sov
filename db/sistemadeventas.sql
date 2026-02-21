@@ -757,7 +757,8 @@ CREATE TABLE `tb_clientes` (
   `nombre` varchar(120) NOT NULL,
   `apellido` varchar(120) NOT NULL,
   `tipo_documento` varchar(30) NOT NULL,
-  `numero_documento` varchar(60) NOT NULL,
+  `numero_documento` varchar(60) DEFAULT NULL,
+  `fecha_nacimiento` date DEFAULT NULL,
   `celular` varchar(30) DEFAULT NULL,
   `email` varchar(120) DEFAULT NULL,
   `direccion` varchar(255) DEFAULT NULL,
@@ -769,9 +770,9 @@ CREATE TABLE `tb_clientes` (
 -- Volcado de datos para la tabla `tb_clientes`
 --
 
-INSERT INTO `tb_clientes` (`id_cliente`, `nombre`, `apellido`, `tipo_documento`, `numero_documento`, `celular`, `email`, `direccion`, `fyh_creacion`, `fyh_actualizacion`) VALUES
-(1, 'DEmo demo', 'demo', 'Cédula', '001113909347N', '8888888', 'demo@demo.com', 'demo del otro lado', '2026-02-03 04:13:26', '2026-02-03 04:13:26'),
-(2, 'demo jeff', 'zamora', 'CED', '909090909', '8888888', 'demo@demo.com', 'demo del otro lado', '2026-02-03 04:28:39', '2026-02-03 04:28:39');
+INSERT INTO `tb_clientes` (`id_cliente`, `nombre`, `apellido`, `tipo_documento`, `numero_documento`, `fecha_nacimiento`, `celular`, `email`, `direccion`, `fyh_creacion`, `fyh_actualizacion`) VALUES
+(1, 'DEmo demo', 'demo', 'Cédula', '001113909347N', NULL, '8888888', 'demo@demo.com', 'demo del otro lado', '2026-02-03 04:13:26', '2026-02-03 04:13:26'),
+(2, 'demo jeff', 'zamora', 'CED', '909090909', NULL, '8888888', 'demo@demo.com', 'demo del otro lado', '2026-02-03 04:28:39', '2026-02-03 04:28:39');
 
 --
 -- Disparadores `tb_clientes`
@@ -779,21 +780,21 @@ INSERT INTO `tb_clientes` (`id_cliente`, `nombre`, `apellido`, `tipo_documento`,
 DELIMITER $$
 CREATE TRIGGER `trg_audit_tb_clientes_del` AFTER DELETE ON `tb_clientes` FOR EACH ROW BEGIN
   INSERT INTO `tb_auditoria` (`tabla`,`accion`,`pk`,`usuario_id`,`usuario_email`,`ip`,`user_agent`,`antes`,`despues`)
-  VALUES ('tb_clientes','DELETE',CAST(OLD.`id_cliente` AS CHAR),@app_user_id,@app_user_email,@app_ip,@app_ua,JSON_OBJECT('id_cliente', OLD.`id_cliente`, 'nombre', OLD.`nombre`, 'apellido', OLD.`apellido`, 'tipo_documento', OLD.`tipo_documento`, 'numero_documento', OLD.`numero_documento`, 'celular', OLD.`celular`, 'email', OLD.`email`, 'direccion', OLD.`direccion`, 'fyh_creacion', OLD.`fyh_creacion`, 'fyh_actualizacion', OLD.`fyh_actualizacion`),NULL);
+  VALUES ('tb_clientes','DELETE',CAST(OLD.`id_cliente` AS CHAR),@app_user_id,@app_user_email,@app_ip,@app_ua,JSON_OBJECT('id_cliente', OLD.`id_cliente`, 'nombre', OLD.`nombre`, 'apellido', OLD.`apellido`, 'tipo_documento', OLD.`tipo_documento`, 'numero_documento', OLD.`numero_documento`, 'fecha_nacimiento', OLD.`fecha_nacimiento`, 'celular', OLD.`celular`, 'email', OLD.`email`, 'direccion', OLD.`direccion`, 'fyh_creacion', OLD.`fyh_creacion`, 'fyh_actualizacion', OLD.`fyh_actualizacion`),NULL);
 END
 $$
 DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `trg_audit_tb_clientes_ins` AFTER INSERT ON `tb_clientes` FOR EACH ROW BEGIN
   INSERT INTO `tb_auditoria` (`tabla`,`accion`,`pk`,`usuario_id`,`usuario_email`,`ip`,`user_agent`,`antes`,`despues`)
-  VALUES ('tb_clientes','INSERT',CAST(NEW.`id_cliente` AS CHAR),@app_user_id,@app_user_email,@app_ip,@app_ua,NULL,JSON_OBJECT('id_cliente', NEW.`id_cliente`, 'nombre', NEW.`nombre`, 'apellido', NEW.`apellido`, 'tipo_documento', NEW.`tipo_documento`, 'numero_documento', NEW.`numero_documento`, 'celular', NEW.`celular`, 'email', NEW.`email`, 'direccion', NEW.`direccion`, 'fyh_creacion', NEW.`fyh_creacion`, 'fyh_actualizacion', NEW.`fyh_actualizacion`));
+  VALUES ('tb_clientes','INSERT',CAST(NEW.`id_cliente` AS CHAR),@app_user_id,@app_user_email,@app_ip,@app_ua,NULL,JSON_OBJECT('id_cliente', NEW.`id_cliente`, 'nombre', NEW.`nombre`, 'apellido', NEW.`apellido`, 'tipo_documento', NEW.`tipo_documento`, 'numero_documento', NEW.`numero_documento`, 'fecha_nacimiento', NEW.`fecha_nacimiento`, 'celular', NEW.`celular`, 'email', NEW.`email`, 'direccion', NEW.`direccion`, 'fyh_creacion', NEW.`fyh_creacion`, 'fyh_actualizacion', NEW.`fyh_actualizacion`));
 END
 $$
 DELIMITER ;
 DELIMITER $$
 CREATE TRIGGER `trg_audit_tb_clientes_upd` AFTER UPDATE ON `tb_clientes` FOR EACH ROW BEGIN
   INSERT INTO `tb_auditoria` (`tabla`,`accion`,`pk`,`usuario_id`,`usuario_email`,`ip`,`user_agent`,`antes`,`despues`)
-  VALUES ('tb_clientes','UPDATE',CAST(NEW.`id_cliente` AS CHAR),@app_user_id,@app_user_email,@app_ip,@app_ua,JSON_OBJECT('id_cliente', OLD.`id_cliente`, 'nombre', OLD.`nombre`, 'apellido', OLD.`apellido`, 'tipo_documento', OLD.`tipo_documento`, 'numero_documento', OLD.`numero_documento`, 'celular', OLD.`celular`, 'email', OLD.`email`, 'direccion', OLD.`direccion`, 'fyh_creacion', OLD.`fyh_creacion`, 'fyh_actualizacion', OLD.`fyh_actualizacion`),JSON_OBJECT('id_cliente', NEW.`id_cliente`, 'nombre', NEW.`nombre`, 'apellido', NEW.`apellido`, 'tipo_documento', NEW.`tipo_documento`, 'numero_documento', NEW.`numero_documento`, 'celular', NEW.`celular`, 'email', NEW.`email`, 'direccion', NEW.`direccion`, 'fyh_creacion', NEW.`fyh_creacion`, 'fyh_actualizacion', NEW.`fyh_actualizacion`));
+  VALUES ('tb_clientes','UPDATE',CAST(NEW.`id_cliente` AS CHAR),@app_user_id,@app_user_email,@app_ip,@app_ua,JSON_OBJECT('id_cliente', OLD.`id_cliente`, 'nombre', OLD.`nombre`, 'apellido', OLD.`apellido`, 'tipo_documento', OLD.`tipo_documento`, 'numero_documento', OLD.`numero_documento`, 'fecha_nacimiento', OLD.`fecha_nacimiento`, 'celular', OLD.`celular`, 'email', OLD.`email`, 'direccion', OLD.`direccion`, 'fyh_creacion', OLD.`fyh_creacion`, 'fyh_actualizacion', OLD.`fyh_actualizacion`),JSON_OBJECT('id_cliente', NEW.`id_cliente`, 'nombre', NEW.`nombre`, 'apellido', NEW.`apellido`, 'tipo_documento', NEW.`tipo_documento`, 'numero_documento', NEW.`numero_documento`, 'fecha_nacimiento', NEW.`fecha_nacimiento`, 'celular', NEW.`celular`, 'email', NEW.`email`, 'direccion', NEW.`direccion`, 'fyh_creacion', NEW.`fyh_creacion`, 'fyh_actualizacion', NEW.`fyh_actualizacion`));
 END
 $$
 DELIMITER ;

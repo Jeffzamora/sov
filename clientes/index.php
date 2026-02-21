@@ -43,6 +43,7 @@ require_once __DIR__ . '/../app/controllers/clientes/listado_de_clientes.php';
                       <th>#</th>
                       <th>Documento</th>
                       <th>Nombre</th>
+                      <th>Nacimiento</th>
                       <th>Celular</th>
                       <th>Email</th>
                       <th>Acciones</th>
@@ -54,6 +55,7 @@ require_once __DIR__ . '/../app/controllers/clientes/listado_de_clientes.php';
                         <td><?php echo $c; ?></td>
                         <td><?php echo htmlspecialchars(($cl['tipo_documento'] ?? '').' '.($cl['numero_documento'] ?? '')); ?></td>
                         <td><?php echo htmlspecialchars(($cl['nombre'] ?? '').' '.($cl['apellido'] ?? '')); ?></td>
+                        <td><?php echo htmlspecialchars($cl['fecha_nacimiento'] ?? ''); ?></td>
                         <td><?php echo htmlspecialchars($cl['celular'] ?? ''); ?></td>
                         <td><?php echo htmlspecialchars($cl['email'] ?? ''); ?></td>
                         <td>
@@ -73,6 +75,7 @@ require_once __DIR__ . '/../app/controllers/clientes/listado_de_clientes.php';
                             data-apellido="<?php echo htmlspecialchars($cl['apellido'] ?? '', ENT_QUOTES); ?>"
                             data-tipo_documento="<?php echo htmlspecialchars($cl['tipo_documento'] ?? '', ENT_QUOTES); ?>"
                             data-numero_documento="<?php echo htmlspecialchars($cl['numero_documento'] ?? '', ENT_QUOTES); ?>"
+                            data-fecha_nacimiento="<?php echo htmlspecialchars($cl['fecha_nacimiento'] ?? '', ENT_QUOTES); ?>"
                             data-celular="<?php echo htmlspecialchars($cl['celular'] ?? '', ENT_QUOTES); ?>"
                             data-email="<?php echo htmlspecialchars($cl['email'] ?? '', ENT_QUOTES); ?>"
                             data-direccion="<?php echo htmlspecialchars($cl['direccion'] ?? '', ENT_QUOTES); ?>"
@@ -123,17 +126,28 @@ require_once __DIR__ . '/../app/controllers/clientes/listado_de_clientes.php';
               <div class="form-group">
                 <label>Tipo documento *</label>
                 <select name="tipo_documento" class="form-control" required>
+                  <option value="" selected disabled>Seleccione...</option>
                   <option value="DNI">DNI</option>
                   <option value="Cédula">Cédula</option>
                   <option value="Pasaporte">Pasaporte</option>
                   <option value="Otro">Otro</option>
+                  <option value="Menor">Menor (sin documento)</option>
                 </select>
               </div>
             </div>
             <div class="col-md-8">
               <div class="form-group">
-                <label>Número documento *</label>
-                <input type="text" name="numero_documento" class="form-control" required>
+                <label>Número documento</label>
+                <input type="text" name="numero_documento" class="form-control" placeholder="Ej: 0011401970010N">
+                <small class="text-muted">Si es cédula NIC: MMM + DDMMAA + #### + letra (opcional).</small>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Fecha de nacimiento</label>
+                <input type="date" name="fecha_nacimiento" class="form-control">
+                <small class="text-muted">Si el cliente es menor, se permitirá guardar sin documento.</small>
               </div>
             </div>
 
@@ -197,6 +211,7 @@ require_once __DIR__ . '/../app/controllers/clientes/listado_de_clientes.php';
               <div class="form-group">
                 <label>Tipo documento *</label>
                 <select name="tipo_documento" id="edit_tipo_documento" class="form-control" required>
+                  <option value="Menor">Menor (sin documento)</option>
                   <option value="DNI">DNI</option>
                   <option value="Cédula">Cédula</option>
                   <option value="Pasaporte">Pasaporte</option>
@@ -206,8 +221,15 @@ require_once __DIR__ . '/../app/controllers/clientes/listado_de_clientes.php';
             </div>
             <div class="col-md-8">
               <div class="form-group">
-                <label>Número documento *</label>
-                <input type="text" name="numero_documento" id="edit_numero_documento" class="form-control" required>
+                <label>Número documento</label>
+                <input type="text" name="numero_documento" id="edit_numero_documento" class="form-control" placeholder="Ej: 0011401970010N">
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Fecha de nacimiento</label>
+                <input type="date" name="fecha_nacimiento" id="edit_fecha_nacimiento" class="form-control">
               </div>
             </div>
 
@@ -269,12 +291,103 @@ $(function(){
     $('#edit_apellido').val($b.data('apellido'));
     $('#edit_tipo_documento').val($b.data('tipo_documento'));
     $('#edit_numero_documento').val($b.data('numero_documento'));
+    $('#edit_fecha_nacimiento').val($b.data('fecha_nacimiento'));
     $('#edit_celular').val($b.data('celular'));
     $('#edit_email').val($b.data('email'));
     $('#edit_direccion').val($b.data('direccion'));
     $('#edit_cliente_error').text('');
+
+    applyDocRules($('#edit_tipo_documento'), $('#edit_numero_documento'), $('#edit_fecha_nacimiento'));
     $('#modal-edit-cliente').modal('show');
   });
+
+  function yearsFromDob(dob){
+    try{
+      if(!dob) return null;
+      const d = new Date(dob + 'T00:00:00');
+      if(isNaN(d.getTime())) return null;
+      const now = new Date();
+      let age = now.getFullYear() - d.getFullYear();
+      const m = now.getMonth() - d.getMonth();
+      if(m < 0 || (m===0 && now.getDate() < d.getDate())) age--;
+      return age;
+    }catch(e){ return null; }
+  }
+
+  function parseNicCedula(s){
+    if(!s) return null;
+    const v = String(s).toUpperCase().replace(/[\s\-]+/g,'');
+    const m = v.match(/^(\d{3})(\d{2})(\d{2})(\d{2})(\d{4})([A-Z])?$/);
+    if(!m) return null;
+    const dd = parseInt(m[2],10), mm = parseInt(m[3],10), yy = parseInt(m[4],10);
+    const nowYY = new Date().getFullYear() % 100;
+    const year = (yy > nowYY) ? (1900 + yy) : (2000 + yy);
+    // Validación fecha
+    const dt = new Date(year, mm-1, dd);
+    if(dt.getFullYear()!==year || (dt.getMonth()+1)!==mm || dt.getDate()!==dd) return null;
+    const dob = String(year).padStart(4,'0')+'-'+String(mm).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
+    return { municipio:m[1], dob };
+  }
+
+  function applyDocRules($tipo, $doc, $dob){
+    const tipo = String($tipo.val()||'');
+    const dob = String($dob.val()||'');
+    const age = yearsFromDob(dob);
+
+    // Regla UI: SOLO deshabilitamos/limpiamos documento si el usuario selecciona "Menor".
+    // Si la fecha indica <18, NO forzamos el tipo a "Menor" (para permitir casos donde sí tienen documento).
+    const tipoIsMenor = (tipo.toLowerCase()==='menor');
+
+    if(tipoIsMenor){
+      $doc.val('');
+      $doc.prop('disabled', true);
+    }else{
+      $doc.prop('disabled', false);
+    }
+
+    // Hint suave (no bloqueante)
+    const $hint = $doc.closest('.form-group').find('.js-menor-hint');
+    if(age !== null && age < 18 && !tipoIsMenor){
+      if($hint.length===0){
+        $doc.closest('.form-group').append('<small class="text-muted js-menor-hint">Nota: Por la fecha de nacimiento, parece menor de edad. Si no tiene documento, selecciona "Menor".</small>');
+      }
+    }else{
+      $hint.remove();
+    }
+  }
+
+  // Reglas en Create
+  const $cTipo = $('#form-create-cliente select[name="tipo_documento"]');
+  const $cDoc  = $('#form-create-cliente input[name="numero_documento"]');
+  const $cDob  = $('#form-create-cliente input[name="fecha_nacimiento"]');
+  $cTipo.on('change', ()=> applyDocRules($cTipo,$cDoc,$cDob));
+  $cDob.on('change', ()=> applyDocRules($cTipo,$cDoc,$cDob));
+  $cDoc.on('blur', ()=>{
+    // Si es cédula NIC, autocompletar DOB si está vacío
+    const tipo = String($cTipo.val()||'');
+    if(tipo.toLowerCase().includes('cédula') || tipo.toLowerCase().includes('cedula') || tipo.toLowerCase()==='ced'){
+      const p = parseNicCedula($cDoc.val());
+      if(p && !$cDob.val()) $cDob.val(p.dob);
+    }
+  });
+
+  // Reglas en Edit
+  const $eTipo = $('#edit_tipo_documento');
+  const $eDoc  = $('#edit_numero_documento');
+  const $eDob  = $('#edit_fecha_nacimiento');
+  $eTipo.on('change', ()=> applyDocRules($eTipo,$eDoc,$eDob));
+  $eDob.on('change', ()=> applyDocRules($eTipo,$eDoc,$eDob));
+  $eDoc.on('blur', ()=>{
+    const tipo = String($eTipo.val()||'');
+    if(tipo.toLowerCase().includes('cédula') || tipo.toLowerCase().includes('cedula') || tipo.toLowerCase()==='ced'){
+      const p = parseNicCedula($eDoc.val());
+      if(p && !$eDob.val()) $eDob.val(p.dob);
+    }
+  });
+
+  // estado inicial
+  applyDocRules($cTipo,$cDoc,$cDob);
+  applyDocRules($eTipo,$eDoc,$eDob);
 
   $('#btn-guardar-cliente').on('click', function(){
     $('#create_cliente_error').text('');

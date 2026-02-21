@@ -255,6 +255,18 @@ function h(?string $v): string
                 <dt class="col-5">Documento</dt>
                 <dd class="col-7"><?php echo h(($cliente['tipo_documento'] ?? '') . ' ' . ($cliente['numero_documento'] ?? '')); ?></dd>
 
+                <dt class="col-5">Nacimiento</dt>
+                <dd class="col-7">
+                  <?php
+                    $fn = $cliente['fecha_nacimiento'] ?? '';
+                    $edadTxt = '';
+                    if ($fn && function_exists('age_years_from_date')) {
+                      $edadTxt = ' (' . age_years_from_date((string)$fn) . ' años)';
+                    }
+                    echo h((string)$fn) . h($edadTxt);
+                  ?>
+                </dd>
+
                 <dt class="col-5">Celular</dt>
                 <dd class="col-7"><?php echo h($cliente['celular'] ?? ''); ?></dd>
 
