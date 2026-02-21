@@ -297,6 +297,7 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
 <script>
   $(function () {
+    const WHATSAPP_CC = <?php echo json_encode(APP_WHATSAPP_CC); ?>;
     $("#tblCompras").DataTable({
       pageLength: 10,
       responsive: true,
@@ -349,7 +350,7 @@ function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
       $('#prov_direccion').val($b.data('direccion') || '');
 
       if(celDigits){
-        $('#prov_whats').attr('href', 'https://wa.me/' + encodeURIComponent(celDigits)).removeClass('disabled');
+        $('#prov_whats').attr('href', 'https://wa.me/' + encodeURIComponent(WHATSAPP_CC + celDigits)).removeClass('disabled');
         $('#prov_celular').val(cel);
       }else{
         $('#prov_whats').attr('href', '#').addClass('disabled');

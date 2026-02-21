@@ -167,13 +167,15 @@ function h(?string $v): string { return htmlspecialchars((string)$v, ENT_QUOTES,
               </div>
               <div class="form-group col-md-8">
                 <label class="mb-1">Número doc</label>
-                <input type="text" class="form-control" id="newNumDoc">
+                <input type="text" class="form-control" id="newNumDoc" autocapitalize="characters" spellcheck="false">
+                <div class="invalid-feedback">Documento inválido.</div>
               </div>
             </div>
             <div class="form-row">
               <div class="form-group col-md-6">
                 <label class="mb-1">Celular</label>
-                <input type="text" class="form-control" id="newCelular">
+                <input type="tel" class="form-control" id="newCelular" inputmode="numeric" autocomplete="tel" maxlength="15" placeholder="Ej: 88887777 o 50588887777">
+                <div class="invalid-feedback">Celular inválido. Usa 8 a 15 dígitos (solo números).</div>
               </div>
               <div class="form-group col-md-6">
                 <label class="mb-1">Email</label>
@@ -690,6 +692,17 @@ function h(?string $v): string { return htmlspecialchars((string)$v, ENT_QUOTES,
     if(!s) return '';
     return String(s).replace(/\D+/g,'');
   }
+  function setInvalid(sel, msg){
+    const $el = $(sel);
+    $el.addClass("is-invalid");
+    const $fb = $el.closest(".form-group").find(".invalid-feedback").first();
+    if(msg && $fb.length) $fb.text(msg);
+  }
+
+  function clearInvalid(selScope){
+    $(selScope).find(".is-invalid").removeClass("is-invalid");
+  }
+
 
   // UI: formateo rápido al salir del input
   $('#newNombre').on('blur', ()=> $('#newNombre').val(titleCaseName($('#newNombre').val())));
@@ -708,6 +721,25 @@ function h(?string $v): string { return htmlspecialchars((string)$v, ENT_QUOTES,
       email: ($('#newEmail').val()||'').trim(),
       direccion: ($('#newDireccion').val()||'').trim(),
     };
+
+    clearInvalid('#tab-cliente-nuevo');
+    if(!data.nombre){ setInvalid('#newNombre','Nombre requerido.'); SOV.toast('warning','Nombre requerido.'); return; }
+    if(!data.apellido){ setInvalid('#newApellido','Apellido requerido.'); SOV.toast('warning','Apellido requerido.'); return; }
+
+    if(data.celular && (data.celular.length < 8 || data.celular.length > 15)) {
+      setInvalid('#newCelular','Celular inválido. Usa 8 a 15 dígitos (solo números).');
+      SOV.toast('warning','Revisa los campos marcados en rojo.');
+      return;
+    }
+
+    if((data.tipo_documento||'').toUpperCase()==='CED' && data.numero_documento){
+      if(data.numero_documento.length < 10){
+        setInvalid('#newNumDoc','Cédula inválida (sin guiones).');
+        SOV.toast('warning','Revisa los campos marcados en rojo.');
+        return;
+      }
+    }
+
     SOV.ajaxJson({url:'<?php echo $URL; ?>/app/controllers/citas/cliente_quick_create.php', method:'POST', data:data})
       .done(resp=>{
         if(resp && resp.ok){

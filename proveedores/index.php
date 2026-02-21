@@ -10,6 +10,30 @@ $showAll = (int)($_GET['all'] ?? 0) === 1;
 
 <script>
   const CSRF = <?php echo json_encode(csrf_token()); ?>;
+  const WHATSAPP_CC = <?php echo json_encode(APP_WHATSAPP_CC); ?>;
+
+  function normalizePhone(s){
+    if(!s) return "";
+    return String(s).replace(/\D+/g, "");
+  }
+
+  function titleCaseName(v){
+    v = (v||"").toString().trim();
+    if(!v) return "";
+    return v.toLowerCase().replace(/(^|\s|\-|\.)[a-záéíóúñ]/g, m => m.toUpperCase());
+  }
+
+  function setInvalid(el, msg){
+    const $el = $(el);
+    $el.addClass("is-invalid");
+    const $fb = $el.closest(".form-group").find(".invalid-feedback").first();
+    if(msg && $fb.length) $fb.text(msg);
+  }
+
+  function clearInvalid(scope){
+    $(scope).find(".is-invalid").removeClass("is-invalid");
+  }
+
 </script>
 
 <div class="content-wrapper">
@@ -97,7 +121,7 @@ $showAll = (int)($_GET['all'] ?? 0) === 1;
                   <td class="text-center">
                     <?php if (trim($digits) !== ''): ?>
                       <a class="btn btn-success btn-sm" target="_blank" rel="noopener"
-                         href="<?php echo 'https://wa.me/' . rawurlencode($digits); ?>">
+                         href="<?php echo 'https://wa.me/' . rawurlencode(APP_WHATSAPP_CC . $digits); ?>">
                         <i class="fa fa-whatsapp"></i>
                         <span class="ml-1"><?php echo h($cel); ?></span>
                       </a>
@@ -181,6 +205,11 @@ $showAll = (int)($_GET['all'] ?? 0) === 1;
       ]
     }).buttons().container().appendTo('#tblProveedores_wrapper .col-md-6:eq(0)');
 
+    // Normalización UI
+    $("#edit_nombre_proveedor, #c_nombre_proveedor").on("blur", function(){ this.value = titleCaseName(this.value); });
+    $("#edit_celular, #c_celular, #edit_telefono, #c_telefono").on("blur", function(){ this.value = normalizePhone(this.value); });
+
+
     // Modal edición (rellenar)
     $(document).on('click', '.btn-edit', function(){
       var $b = $(this);
@@ -205,6 +234,19 @@ $showAll = (int)($_GET['all'] ?? 0) === 1;
         email: $('#edit_email').val(),
         direccion: $('#edit_direccion').val()
       };
+
+      clearInvalid("#modal-edit");
+      payload.nombre_proveedor = titleCaseName(payload.nombre_proveedor);
+      payload.celular = normalizePhone(payload.celular);
+      payload.telefono = normalizePhone(payload.telefono);
+      $("#edit_nombre_proveedor").val(payload.nombre_proveedor);
+      $("#edit_celular").val(payload.celular);
+      $("#edit_telefono").val(payload.telefono);
+
+      if(payload.celular && (payload.celular.length < 8 || payload.celular.length > 15)){
+        setInvalid("#edit_celular", "Celular inválido. Usa 8 a 15 dígitos (solo números).");
+        return (window.SOV && SOV.warnModal) ? SOV.warnModal("Revisa los campos marcados en rojo.") : alert("Revisa los campos marcados en rojo.");
+      }
 
       if (!payload.nombre_proveedor || !payload.celular || !payload.empresa || !payload.direccion) {
         return (window.SOV && SOV.warnModal) ? SOV.warnModal('Completa los campos obligatorios (Nombre, Celular, Empresa, Dirección).') : alert('Completa los campos obligatorios.');
@@ -307,6 +349,19 @@ $showAll = (int)($_GET['all'] ?? 0) === 1;
         direccion: $('#c_direccion').val()
       };
 
+      clearInvalid("#modal-create");
+      payload.nombre_proveedor = titleCaseName(payload.nombre_proveedor);
+      payload.celular = normalizePhone(payload.celular);
+      payload.telefono = normalizePhone(payload.telefono);
+      $("#c_nombre_proveedor").val(payload.nombre_proveedor);
+      $("#c_celular").val(payload.celular);
+      $("#c_telefono").val(payload.telefono);
+
+      if(payload.celular && (payload.celular.length < 8 || payload.celular.length > 15)){
+        setInvalid("#c_celular", "Celular inválido. Usa 8 a 15 dígitos (solo números).");
+        return (window.SOV && SOV.warnModal) ? SOV.warnModal("Revisa los campos marcados en rojo.") : alert("Revisa los campos marcados en rojo.");
+      }
+
       if (!payload.nombre_proveedor || !payload.celular || !payload.empresa || !payload.direccion) {
         return (window.SOV && SOV.warnModal) ? SOV.warnModal('Completa los campos obligatorios (Nombre, Celular, Empresa, Dirección).') : alert('Completa los campos obligatorios.');
       }
@@ -355,7 +410,8 @@ $showAll = (int)($_GET['all'] ?? 0) === 1;
           <div class="col-md-6">
             <div class="form-group">
               <label>Celular <b class="text-danger">*</b></label>
-              <input type="text" id="edit_celular" class="form-control" maxlength="30">
+              <input type="tel" id="edit_celular" class="form-control" inputmode="numeric" autocomplete="tel" maxlength="15" placeholder="Ej: 88887777 o 50588887777">
+              <div class="invalid-feedback">Celular inválido. Usa 8 a 15 dígitos (solo números).</div>
               <small class="text-muted">Solo números recomendado (para WhatsApp).</small>
             </div>
           </div>
@@ -365,7 +421,7 @@ $showAll = (int)($_GET['all'] ?? 0) === 1;
           <div class="col-md-6">
             <div class="form-group">
               <label>Teléfono</label>
-              <input type="text" id="edit_telefono" class="form-control" maxlength="30">
+              <input type="tel" id="edit_telefono" class="form-control" inputmode="numeric" autocomplete="tel" maxlength="15" placeholder="Ej: 22223333">
             </div>
           </div>
           <div class="col-md-6">
@@ -419,7 +475,8 @@ $showAll = (int)($_GET['all'] ?? 0) === 1;
           <div class="col-md-6">
             <div class="form-group">
               <label>Celular <b class="text-danger">*</b></label>
-              <input type="text" id="c_celular" class="form-control" maxlength="30">
+              <input type="tel" id="c_celular" class="form-control" inputmode="numeric" autocomplete="tel" maxlength="15" placeholder="Ej: 88887777 o 50588887777">
+              <div class="invalid-feedback">Celular inválido. Usa 8 a 15 dígitos (solo números).</div>
             </div>
           </div>
         </div>
@@ -428,7 +485,7 @@ $showAll = (int)($_GET['all'] ?? 0) === 1;
           <div class="col-md-6">
             <div class="form-group">
               <label>Teléfono</label>
-              <input type="text" id="c_telefono" class="form-control" maxlength="30">
+              <input type="tel" id="c_telefono" class="form-control" inputmode="numeric" autocomplete="tel" maxlength="15" placeholder="Ej: 22223333">
             </div>
           </div>
           <div class="col-md-6">

@@ -138,7 +138,8 @@ require_once __DIR__ . '/../app/controllers/clientes/listado_de_clientes.php';
             <div class="col-md-8">
               <div class="form-group">
                 <label>Número documento</label>
-                <input type="text" name="numero_documento" class="form-control" placeholder="Ej: 0011401970010N">
+                <input type="text" name="numero_documento" class="form-control" placeholder="Ej: 0011401970010N" autocapitalize="characters" spellcheck="false">
+                <div class="invalid-feedback">Documento inválido. Verifica el formato.</div>
                 <small class="text-muted">Si es cédula NIC: MMM + DDMMAA + #### + letra (opcional).</small>
               </div>
             </div>
@@ -154,7 +155,8 @@ require_once __DIR__ . '/../app/controllers/clientes/listado_de_clientes.php';
             <div class="col-md-4">
               <div class="form-group">
                 <label>Celular</label>
-                <input type="text" name="celular" class="form-control">
+                <input type="tel" name="celular" class="form-control" inputmode="numeric" autocomplete="tel" maxlength="15" placeholder="Ej: 88887777 o 50588887777">
+                <div class="invalid-feedback">Celular inválido. Usa 8 a 15 dígitos (solo números).</div>
               </div>
             </div>
             <div class="col-md-8">
@@ -236,7 +238,8 @@ require_once __DIR__ . '/../app/controllers/clientes/listado_de_clientes.php';
             <div class="col-md-4">
               <div class="form-group">
                 <label>Celular</label>
-                <input type="text" name="celular" id="edit_celular" class="form-control">
+                <input type="tel" name="celular" id="edit_celular" class="form-control" inputmode="numeric" autocomplete="tel" maxlength="15" placeholder="Ej: 88887777 o 50588887777">
+                <div class="invalid-feedback">Celular inválido. Usa 8 a 15 dígitos (solo números).</div>
               </div>
             </div>
             <div class="col-md-8">
@@ -296,6 +299,10 @@ $(function(){
     $('#edit_email').val($b.data('email'));
     $('#edit_direccion').val($b.data('direccion'));
     $('#edit_cliente_error').text('');
+    if(!validateClienteForm($('#form-edit-cliente'))){
+      $('#edit_cliente_error').text('Revisa los campos marcados en rojo.');
+      return;
+    }
 
     applyDocRules($('#edit_tipo_documento'), $('#edit_numero_documento'), $('#edit_fecha_nacimiento'));
     $('#modal-edit-cliente').modal('show');
@@ -352,6 +359,48 @@ $(function(){
     if(!s) return '';
     return String(s).replace(/\D+/g,'');
   }
+  function setInvalid($el, msg){
+    if(!$el || !$el.length) return;
+    $el.addClass("is-invalid");
+    const $fb = $el.closest(".form-group").find(".invalid-feedback").first();
+    if(msg && $fb.length) $fb.text(msg);
+  }
+
+  function clearInvalid($form){
+    $form.find(".is-invalid").removeClass("is-invalid");
+  }
+
+  function validateClienteForm($form){
+    clearInvalid($form);
+    let ok = true;
+    const $tipo = $form.find("select[name=\"tipo_documento\"]");
+    const $doc  = $form.find("input[name=\"numero_documento\"]");
+    const $cel  = $form.find("input[name=\"celular\"]");
+
+    const tipo = String($tipo.val()||"");
+    const doc  = normalizeDoc($doc.val());
+    const cel  = normalizePhone($cel.val());
+
+    if(cel && (cel.length < 8 || cel.length > 15)){
+      ok = false;
+      setInvalid($cel, "Celular inválido. Usa 8 a 15 dígitos (solo números)." );
+    }
+
+    if(tipo && tipo.toLowerCase() !== "menor" && doc){
+      if(doc.length < 5){
+        ok = false;
+        setInvalid($doc, "Documento demasiado corto." );
+      }
+      const t = tipo.toLowerCase();
+      if((t.includes("cédula") || t.includes("cedula") || t==="ced") && !parseNicCedula(doc)){
+        ok = false;
+        setInvalid($doc, "Cédula NIC inválida. Ej: 0011401970010N (sin guiones)." );
+      }
+    }
+
+    return ok;
+  }
+
 
   function applyDocRules($tipo, $doc, $dob){
     const tipo = String($tipo.val()||'');
@@ -431,6 +480,10 @@ $(function(){
 
   $('#btn-guardar-cliente').on('click', function(){
     $('#create_cliente_error').text('');
+    if(!validateClienteForm($('#form-create-cliente'))){
+      $('#create_cliente_error').text('Revisa los campos marcados en rojo.');
+      return;
+    }
     const data = $('#form-create-cliente').serializeArray();
     data.push({name:'_csrf', value: CSRF});
     $.ajax({
@@ -456,6 +509,10 @@ $(function(){
 
   $('#btn-actualizar-cliente').on('click', function(){
     $('#edit_cliente_error').text('');
+    if(!validateClienteForm($('#form-edit-cliente'))){
+      $('#edit_cliente_error').text('Revisa los campos marcados en rojo.');
+      return;
+    }
     const data = $('#form-edit-cliente').serializeArray();
     data.push({name:'_csrf', value: CSRF});
     $.ajax({

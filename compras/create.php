@@ -377,7 +377,7 @@ echo "<script>window.SOV_CSRF = " . json_encode(csrf_token()) . ";</script>";
                                                                        </td>
                                                                        <td><?php echo $nombre_proveedor;?></td>
                                                                        <td>
-                                                                           <a href="https://wa.me/591<?php echo $proveedores_dato['celular'];?>" target="_blank" class="btn btn-success">
+                                                                           <a href="https://wa.me/<?php echo APP_WHATSAPP_CC . preg_replace('/\\D+/', '', (string)($proveedores_dato['celular'] ?? '')); ?>" target="_blank" class="btn btn-success">
                                                                                <i class="fa fa-phone"></i>
                                                                                <?php echo $proveedores_dato['celular'];?>
                                                                            </a>

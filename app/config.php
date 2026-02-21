@@ -54,6 +54,9 @@ define('DB_PASS', getenv('DB_PASS') ?: '');
 define('APP_TZ', getenv('APP_TZ') ?: 'America/Managua');
 // Ajusta solo si instalas en otra carpeta. Por defecto: /sov
 define('APP_BASE_PATH', getenv('APP_BASE_PATH') ?: '/sov');
+// WhatsApp country code (solo dígitos). Ej: 505 Nicaragua, 1 USA
+define('APP_WHATSAPP_CC', preg_replace('/\D+/', '', (getenv('APP_WHATSAPP_CC') ?: '505')));
+
 
 date_default_timezone_set(APP_TZ);
 $fechaHora = date('Y-m-d H:i:s');
