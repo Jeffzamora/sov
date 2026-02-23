@@ -4,15 +4,10 @@ declare(strict_types=1);
 $BASE_DIR = dirname(__DIR__);
 require_once $BASE_DIR . '/app/config.php';
 require_once $BASE_DIR . '/layout/sesion.php';
-require_once __DIR__ . '/_export.php';
-
 // RBAC (si está activo)
 if (function_exists('require_perm')) {
   require_perm($pdo, 'reportes.ver', $URL . '/');
 }
-
-require_once $BASE_DIR . '/layout/parte1.php';
-
 function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 
 $from  = (string)($_GET['from'] ?? '');
@@ -57,6 +52,8 @@ try {
 }
 
 $export = strtolower((string)($_GET['export'] ?? ''));
+if ($export !== '') { require_once __DIR__ . '/_export.php'; }
+
 if ($export === 'csv' || $export === 'excel') {
   $out = [];
   foreach ($rows as $r) {
@@ -69,8 +66,21 @@ if ($export === 'csv' || $export === 'excel') {
       number_format((float)($r['total'] ?? 0), 2, '.', ''),
     ];
   }
-  report_export_csv("reporte_ventas_{$group}_{$from}_a_{$to}",
-    ['Periodo','Cantidad ventas','Subtotal','Descuento','Impuesto','Total'], $out);
+
+  if ($export === 'excel') {
+    report_export_excel(
+      "reporte_ventas_{$group}_{$from}_a_{$to}",
+      ['Periodo','Cantidad ventas','Subtotal','Descuento','Impuesto','Total'],
+      $out,
+      'Ventas por periodo'
+    );
+  }
+
+  report_export_csv(
+    "reporte_ventas_{$group}_{$from}_a_{$to}",
+    ['Periodo','Cantidad ventas','Subtotal','Descuento','Impuesto','Total'],
+    $out
+  );
 }
 
 if ($export === 'pdf') {
@@ -107,6 +117,8 @@ if ($export === 'pdf') {
   $html = ob_get_clean();
   report_export_pdf("reporte_ventas_{$group}_{$from}_a_{$to}", $html, 'letter');
 }
+
+require_once $BASE_DIR . '/layout/parte1.php';
 ?>
 
 <div class="content-wrapper">
@@ -133,7 +145,7 @@ if ($export === 'pdf') {
           <h3 class="card-title"><i class="fas fa-filter"></i> Filtros</h3>
           <div class="card-tools">
             <a class="btn btn-xs btn-outline-success"
-               href="<?php echo $URL; ?>/reportes/ventas_rango.php?from=<?php echo h($from); ?>&to=<?php echo h($to); ?>&group=<?php echo h($group); ?>&export=csv">
+               href="<?php echo $URL; ?>/reportes/ventas_rango.php?from=<?php echo h($from); ?>&to=<?php echo h($to); ?>&group=<?php echo h($group); ?>&export=excel">
               <i class="fas fa-file-excel"></i> Excel
             </a>
             <a class="btn btn-xs btn-outline-danger"

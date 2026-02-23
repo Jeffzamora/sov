@@ -4,14 +4,9 @@ declare(strict_types=1);
 $BASE_DIR = dirname(__DIR__);
 require_once $BASE_DIR . '/app/config.php';
 require_once $BASE_DIR . '/layout/sesion.php';
-require_once __DIR__ . '/_export.php';
-
 if (function_exists('require_perm')) {
   require_perm($pdo, 'reportes.ver', $URL . '/');
 }
-
-require_once $BASE_DIR . '/layout/parte1.php';
-
 function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 
 $asOf = (string)($_GET['as_of'] ?? '');
@@ -54,6 +49,8 @@ try {
 }
 
 $export = strtolower((string)($_GET['export'] ?? ''));
+if ($export !== '') { require_once __DIR__ . '/_export.php'; }
+
 if ($export === 'csv' || $export === 'excel') {
   $out = [];
   foreach ($rows as $r) {
@@ -69,8 +66,21 @@ if ($export === 'csv' || $export === 'excel') {
       number_format((float)($r['saldo_pendiente'] ?? 0), 2, '.', ''),
     ];
   }
-  report_export_csv("reporte_creditos_aging_{$asOf}",
-    ['Nro Venta','Fecha','Días','Método','Cliente','Documento','Total','Saldo'], $out);
+
+  if ($export === 'excel') {
+    report_export_excel(
+      "reporte_creditos_aging_{$asOf}",
+      ['Nro Venta','Fecha','Días','Método','Cliente','Documento','Total','Saldo'],
+      $out,
+      'Créditos (Aging)'
+    );
+  }
+
+  report_export_csv(
+    "reporte_creditos_aging_{$asOf}",
+    ['Nro Venta','Fecha','Días','Método','Cliente','Documento','Total','Saldo'],
+    $out
+  );
 }
 
 if ($export === 'pdf') {
@@ -116,6 +126,8 @@ if ($export === 'pdf') {
   $html = ob_get_clean();
   report_export_pdf("reporte_creditos_aging_{$asOf}", $html, 'letter');
 }
+
+require_once $BASE_DIR . '/layout/parte1.php';
 ?>
 
 <div class="content-wrapper">
@@ -142,7 +154,7 @@ if ($export === 'pdf') {
           <h3 class="card-title"><i class="fas fa-filter"></i> Corte</h3>
           <div class="card-tools">
             <a class="btn btn-xs btn-outline-success"
-               href="<?php echo $URL; ?>/reportes/creditos_aging.php?as_of=<?php echo h($asOf); ?>&export=csv">
+               href="<?php echo $URL; ?>/reportes/creditos_aging.php?as_of=<?php echo h($asOf); ?>&export=excel">
               <i class="fas fa-file-excel"></i> Excel
             </a>
             <a class="btn btn-xs btn-outline-danger"

@@ -4,10 +4,6 @@ declare(strict_types=1);
 $BASE_DIR = dirname(__DIR__);
 require_once $BASE_DIR . '/app/config.php';
 require_once $BASE_DIR . '/layout/sesion.php';
-require_once __DIR__ . '/_export.php';
-
-require_once $BASE_DIR . '/layout/parte1.php';
-
 function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 
 $rows = [];
@@ -29,6 +25,8 @@ try {
 
 // Export
 $export = strtolower((string)($_GET['export'] ?? ''));
+if ($export !== '') { require_once __DIR__ . '/_export.php'; }
+
 if ($export === 'csv' || $export === 'excel') {
   $outRows = [];
   foreach ($rows as $r) {
@@ -39,6 +37,16 @@ if ($export === 'csv' || $export === 'excel') {
       (string)((int)($r['stock_minimo'] ?? 0)),
     ];
   }
+
+  if ($export === 'excel') {
+    report_export_excel(
+      'reporte_stock_bajo_' . date('Y-m-d'),
+      ['Código','Producto','Stock','Mínimo'],
+      $outRows,
+      'Stock bajo (mínimo)'
+    );
+  }
+
   report_export_csv('reporte_stock_bajo_' . date('Y-m-d'), ['Código','Producto','Stock','Mínimo'], $outRows);
 }
 
@@ -71,6 +79,8 @@ if ($export === 'pdf') {
   $html = ob_get_clean();
   report_export_pdf('reporte_stock_bajo_' . date('Y-m-d'), $html, 'letter');
 }
+
+require_once $BASE_DIR . '/layout/parte1.php';
 ?>
 
 <div class="content-wrapper">
@@ -82,7 +92,7 @@ if ($export === 'pdf') {
           <div class="text-muted">Productos con stock menor o igual al mínimo</div>
         </div>
         <div class="col-sm-6 text-sm-right mt-2 mt-sm-0">
-          <a class="btn btn-sm btn-outline-success" href="<?php echo $URL; ?>/reportes/stock_bajo.php?export=csv">
+          <a class="btn btn-sm btn-outline-success" href="<?php echo $URL; ?>/reportes/stock_bajo.php?export=excel">
             <i class="fas fa-file-excel"></i> Excel
           </a>
           <a class="btn btn-sm btn-outline-danger" href="<?php echo $URL; ?>/reportes/stock_bajo.php?export=pdf">

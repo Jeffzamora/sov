@@ -4,10 +4,6 @@ declare(strict_types=1);
 $BASE_DIR = dirname(__DIR__);
 require_once $BASE_DIR . '/app/config.php';
 require_once $BASE_DIR . '/layout/sesion.php';
-require_once __DIR__ . '/_export.php';
-
-require_once $BASE_DIR . '/layout/parte1.php';
-
 function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 
 // Filtros
@@ -50,6 +46,8 @@ try {
 
 // Export
 $export = strtolower((string)($_GET['export'] ?? ''));
+if ($export !== '') { require_once __DIR__ . '/_export.php'; }
+
 if ($export === 'csv' || $export === 'excel') {
   $outRows = [];
   foreach ($rows as $r) {
@@ -60,6 +58,16 @@ if ($export === 'csv' || $export === 'excel') {
       number_format((float)($r['monto'] ?? 0), 2, '.', ''),
     ];
   }
+
+  if ($export === 'excel') {
+    report_export_excel(
+      'reporte_ventas_productos_' . $from . '_a_' . $to,
+      ['Código','Producto','Cantidad','Monto'],
+      $outRows,
+      'Ventas por producto'
+    );
+  }
+
   report_export_csv('reporte_ventas_productos_' . $from . '_a_' . $to, ['Código','Producto','Cantidad','Monto'], $outRows);
 }
 
@@ -93,6 +101,8 @@ if ($export === 'pdf') {
   $html = ob_get_clean();
   report_export_pdf('reporte_ventas_productos_' . $from . '_a_' . $to, $html, 'letter');
 }
+
+require_once $BASE_DIR . '/layout/parte1.php';
 ?>
 
 <div class="content-wrapper">
@@ -119,7 +129,7 @@ if ($export === 'pdf') {
         <div class="card-header">
           <h3 class="card-title"><i class="fas fa-filter"></i> Filtros</h3>
           <div class="card-tools">
-            <a class="btn btn-xs btn-outline-success" href="<?php echo $URL; ?>/reportes/ventas_productos.php?from=<?php echo h($from); ?>&to=<?php echo h($to); ?>&export=csv">
+            <a class="btn btn-xs btn-outline-success" href="<?php echo $URL; ?>/reportes/ventas_productos.php?from=<?php echo h($from); ?>&to=<?php echo h($to); ?>&export=excel">
               <i class="fas fa-file-excel"></i> Excel
             </a>
             <a class="btn btn-xs btn-outline-danger" href="<?php echo $URL; ?>/reportes/ventas_productos.php?from=<?php echo h($from); ?>&to=<?php echo h($to); ?>&export=pdf">
