@@ -15,6 +15,7 @@ $path = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?: '';
 $activeMenu = [
   'dashboard'   => ($path === APP_BASE_PATH . '/' || $path === APP_BASE_PATH || str_ends_with($path, '/index.php')),
   'reportes'    => str_contains($path, '/reportes'),
+  'configuracion' => str_contains($path, '/configuracion'),
   'usuarios'    => str_contains($path, '/usuarios'),
   'roles'       => str_contains($path, '/roles'),
   'categorias'  => str_contains($path, '/categorias'),
@@ -26,6 +27,13 @@ $activeMenu = [
   'cajas'       => str_contains($path, '/cajas'),
   'ventas'      => str_contains($path, '/ventas'),
 ];
+
+$optica = function_exists('optica_info') ? (array)optica_info() : [];
+$opticaNombre = (string)($optica['nombre'] ?? 'SOV');
+$opticaLogo   = (string)($optica['logo'] ?? '');
+$opticaFavicon= (string)($optica['favicon'] ?? '');
+$opticaIcon   = (string)($optica['icon'] ?? '');
+$opticaColor  = (string)($optica['color'] ?? '#0b2a4a');
 ?>
 
 <!DOCTYPE html>
@@ -33,18 +41,18 @@ $activeMenu = [
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0b2a4a">
-  <title>Óptica Alta Vision | Sistema</title>
+  <meta name="theme-color" content="<?php echo e($opticaColor); ?>">
+  <title><?php echo e($opticaNombre); ?> | Sistema</title>
 
   <!-- PWA -->
   <link rel="manifest" href="<?php echo $URL; ?>/manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <link rel="apple-touch-icon" href="<?php echo $URL; ?>/public/pwa/icon-192.png">
+  <link rel="apple-touch-icon" href="<?php echo e($opticaIcon ?: ($URL . '/public/pwa/icon-192.png')); ?>">
 
   <!-- Favicons -->
-  <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $URL; ?>/public/images/optica/icon_bajo.png">
-  <link rel="apple-touch-icon" href="<?php echo $URL; ?>/public/images/optica/icon_alto.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="<?php echo e($opticaFavicon ?: ($URL . '/public/images/optica/icon_bajo.png')); ?>">
+  <link rel="apple-touch-icon" href="<?php echo e($opticaIcon ?: ($URL . '/public/images/optica/icon_alto.png')); ?>">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -86,7 +94,7 @@ $activeMenu = [
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="<?php echo $URL; ?>/" class="nav-link">Óptica Alta Vision</a>
+        <a href="<?php echo $URL; ?>/" class="nav-link"><?php echo e($opticaNombre); ?></a>
       </li>
     </ul>
     <ul class="navbar-nav ml-auto">
@@ -101,11 +109,11 @@ $activeMenu = [
   <!-- Sidebar -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <a href="<?php echo $URL; ?>/" class="brand-link">
-      <img src="<?php echo $URL; ?>/public/images/optica/logo_bajo.png"
+      <img src="<?php echo e($opticaLogo ?: ($URL . '/public/images/optica/logo_bajo.png')); ?>"
            alt="Óptica"
            class="brand-image img-circle elevation-3"
            style="opacity:.85">
-      <span class="brand-text font-weight-light">Óptica SIS</span>
+      <span class="brand-text font-weight-light"><?php echo e($opticaNombre); ?></span>
     </a>
 
     <div class="sidebar">
@@ -143,6 +151,16 @@ $activeMenu = [
               <p>Reportes</p>
             </a>
           </li>
+
+          <!-- Configuración -->
+          <?php if (function_exists('ui_can') ? (ui_can('configuracion.ver') || ui_can('configuracion.editar')) : true): ?>
+          <li class="nav-item">
+            <a href="<?php echo $URL; ?>/configuracion" class="nav-link <?php echo $activeMenu['configuracion'] ? 'active' : ''; ?>">
+              <i class="nav-icon fas fa-cogs"></i>
+              <p>Configuración</p>
+            </a>
+          </li>
+          <?php endif; ?>
 
           <!-- Usuarios -->
           <?php if (function_exists('ui_can') ? ui_can('usuarios.ver') : true): ?>

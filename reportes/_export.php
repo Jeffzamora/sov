@@ -2,13 +2,15 @@
 declare(strict_types=1);
 
 /**
- * Helper compartido para exportar Reportes a:
+ * Helpers compartidos para exportar Reportes a:
  * - CSV (compatible con Excel)
  * - Excel (XLS vía HTML)
  * - PDF (Dompdf sin Composer: vendor/dompdf)
  *
- * Requisitos para PDF (modo manual):
- * - Debe existir: vendor/dompdf/autoload.inc.php
+ * Notas importantes:
+ * - Este archivo NO debe incluir layout (parte1/parte2) para evitar "headers already sent".
+ * - Para PDF con imágenes (logo PNG/JPG), PHP requiere la extensión GD.
+ *   Si GD no está disponible o si "print.show_logo" está desactivado, se omiten imágenes.
  */
 
 if (!function_exists('report_no_cache_headers')) {
@@ -33,25 +35,18 @@ if (!function_exists('report_safe_filename')) {
 if (!function_exists('report_csv_delimiter')) {
   function report_csv_delimiter(): string
   {
-    // Excel en Windows puede usar ';' dependiendo del separador regional.
-    // Permitir override con ENV: APP_CSV_DELIMITER=;
-    $d = (string) (getenv('APP_CSV_DELIMITER') ?: '');
+    $d = (string)(getenv('APP_CSV_DELIMITER') ?: '');
     if ($d === ';' || $d === ',') return $d;
     return ',';
   }
 }
 
 if (!function_exists('report_export_csv')) {
-  /**
-   * Exporta como CSV (compatible con Excel).
-   * - BOM UTF-8
-   * - Headers correctos
-   * - Delimitador configurable
-   */
   function report_export_csv(string $filenameSinExt, array $headers, array $rows): void
   {
     $filename = report_safe_filename($filenameSinExt) . '.csv';
 
+    while (ob_get_level() > 0) { @ob_end_clean(); }
     report_no_cache_headers();
     header('Content-Type: text/csv; charset=UTF-8');
     header('Content-Disposition: attachment; filename="' . $filename . '"');
@@ -63,9 +58,7 @@ if (!function_exists('report_export_csv')) {
       exit;
     }
 
-    // UTF-8 BOM para Excel
-    fwrite($out, "\xEF\xBB\xBF");
-
+    fwrite($out, "\xEF\xBB\xBF"); // BOM UTF-8
     $delim = report_csv_delimiter();
     fputcsv($out, $headers, $delim);
 
@@ -74,7 +67,7 @@ if (!function_exists('report_export_csv')) {
       $line = [];
       foreach ($r as $v) {
         if (is_bool($v)) $v = $v ? '1' : '0';
-        elseif (is_null($v)) $v = '';
+        elseif ($v === null) $v = '';
         elseif (is_array($v) || is_object($v)) $v = json_encode($v, JSON_UNESCAPED_UNICODE);
         $line[] = (string)$v;
       }
@@ -87,14 +80,11 @@ if (!function_exists('report_export_csv')) {
 }
 
 if (!function_exists('report_export_excel')) {
-  /**
-   * Exporta como "Excel" sin librerías externas: genera un .xls (HTML table)
-   * Excel/LibreOffice lo abren correctamente.
-   */
   function report_export_excel(string $filenameSinExt, array $headers, array $rows, string $title = ''): void
   {
     $filename = report_safe_filename($filenameSinExt) . '.xls';
 
+    while (ob_get_level() > 0) { @ob_end_clean(); }
     report_no_cache_headers();
     header('Content-Type: application/vnd.ms-excel; charset=UTF-8');
     header('Content-Disposition: attachment; filename="' . $filename . '"');
@@ -102,25 +92,22 @@ if (!function_exists('report_export_excel')) {
     $esc = static fn($v): string => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 
     echo "<!doctype html><html lang='es'><head><meta charset='utf-8'>";
-    echo "<style>\n";
-    echo "body{font-family:Arial,Helvetica,sans-serif}\n";
-    echo "table{border-collapse:collapse;font-size:11pt}\n";
-    echo "th,td{border:1px solid #d0d0d0;padding:6px;vertical-align:top}\n";
-    echo "th{background:#f2f2f2;font-weight:bold}\n";
-    // Formatos MSO (Excel)
-    echo ".num{mso-number-format:'0.00';text-align:right}\n";
-    echo ".int{mso-number-format:'0';text-align:right}\n";
-    echo ".txt{mso-number-format:'\\@'}\n";
-    echo "</style></head><body>";
+    echo "<style>
+      body{font-family:Arial,Helvetica,sans-serif}
+      table{border-collapse:collapse;font-size:11pt}
+      th,td{border:1px solid #d0d0d0;padding:6px;vertical-align:top}
+      th{background:#f2f2f2;font-weight:bold}
+      .num{mso-number-format:'0.00';text-align:right}
+      .int{mso-number-format:'0';text-align:right}
+      .txt{mso-number-format:'\\@'}
+    </style></head><body>";
 
     if ($title !== '') {
       echo "<h2 style='margin:0 0 10px 0'>" . $esc($title) . "</h2>";
     }
 
     echo "<table><thead><tr>";
-    foreach ($headers as $h) {
-      echo '<th>' . $esc($h) . '</th>';
-    }
+    foreach ($headers as $h) echo '<th>' . $esc($h) . '</th>';
     echo "</tr></thead><tbody>";
 
     foreach ($rows as $r) {
@@ -142,53 +129,36 @@ if (!function_exists('report_export_excel')) {
 }
 
 if (!function_exists('report_export_pdf')) {
-  /**
-   * Exporta un HTML a PDF usando Dompdf si está disponible (sin Composer).
-   * - Incluye header con logo/nombre si existe optica_info()
-   * - Agrega número de página
-   * - Fallback a HTML imprimible si no está Dompdf
-   */
   function report_export_pdf(string $filenameSinExt, string $html, string $paper = 'letter', string $orientation = 'portrait'): void
   {
     $filename = report_safe_filename($filenameSinExt) . '.pdf';
 
-    // Wrapper (marca / estilos básicos)
     $optica = function_exists('optica_info') ? (array)optica_info() : [];
     $opticaNombre = (string)($optica['nombre'] ?? '');
-    $opticaTel    = (string)($optica['telefono'] ?? '');
-    $opticaLogo   = (string)($optica['logo'] ?? '');
+    $opticaTel = (string)($optica['telefono'] ?? '');
+    $opticaLogo = (string)($optica['logo'] ?? '');
 
-    $baseUrl = '';
-    if (isset($GLOBALS['URL']) && is_string($GLOBALS['URL'])) {
-      $baseUrl = rtrim((string)$GLOBALS['URL'], '/');
-    }
+    $showLogoSetting = function_exists('setting') ? (bool)setting('print.show_logo', true) : true;
+    $gdOk = extension_loaded('gd');
+    $canShowLogo = $showLogoSetting && $gdOk;
 
-    $logoUrl = '';
-    if ($opticaLogo !== '') {
-      if (preg_match('~^https?://~i', $opticaLogo)) {
-        $logoUrl = $opticaLogo;
-      } elseif ($baseUrl !== '') {
-        $logoUrl = $baseUrl . '/' . ltrim($opticaLogo, '/');
-      }
-    }
+    $wrapped = "<!doctype html><html lang='es'><head><meta charset='utf-8'>";
+    $wrapped .= "<style>
+      body{font-family:DejaVu Sans, Arial, Helvetica, sans-serif;font-size:12px;color:#111}
+      .hdr{width:100%;margin:0 0 10px 0;padding:0 0 8px 0;border-bottom:1px solid #d0d0d0}
+      .hdr .row{display:table;width:100%}
+      .hdr .c{display:table-cell;vertical-align:middle}
+      .muted{color:#666}
+      table{border-collapse:collapse;width:100%}
+      th,td{padding:6px;border-bottom:1px solid #e6e6e6}
+      th{border-bottom:1px solid #333;text-align:left}
+    </style></head><body>";
 
-    $wrapped  = "<!doctype html><html lang='es'><head><meta charset='utf-8'>";
-    $wrapped .= "<style>\n";
-    $wrapped .= "body{font-family:DejaVu Sans, Arial, Helvetica, sans-serif;font-size:12px;color:#111}\n";
-    $wrapped .= ".hdr{width:100%;margin:0 0 10px 0;padding:0 0 8px 0;border-bottom:1px solid #d0d0d0}\n";
-    $wrapped .= ".hdr .row{display:table;width:100%}\n";
-    $wrapped .= ".hdr .c{display:table-cell;vertical-align:middle}\n";
-    $wrapped .= ".muted{color:#666}\n";
-    $wrapped .= "table{border-collapse:collapse;width:100%}\n";
-    $wrapped .= "th,td{padding:6px;border-bottom:1px solid #e6e6e6}\n";
-    $wrapped .= "th{border-bottom:1px solid #333;text-align:left}\n";
-    $wrapped .= "</style></head><body>";
-
-    if ($opticaNombre !== '' || $logoUrl !== '' || $opticaTel !== '') {
+    if ($opticaNombre !== '' || $opticaLogo !== '' || $opticaTel !== '') {
       $wrapped .= "<div class='hdr'><div class='row'>";
       $wrapped .= "<div class='c' style='width:60px'>";
-      if ($logoUrl !== '') {
-        $wrapped .= "<img src='" . htmlspecialchars($logoUrl, ENT_QUOTES, 'UTF-8') . "' style='height:48px'>";
+      if ($opticaLogo !== '' && $canShowLogo) {
+        $wrapped .= "<img src='" . htmlspecialchars($opticaLogo, ENT_QUOTES, 'UTF-8') . "' style='height:48px'>";
       }
       $wrapped .= "</div>";
       $wrapped .= "<div class='c'>";
@@ -197,6 +167,9 @@ if (!function_exists('report_export_pdf')) {
       }
       if ($opticaTel !== '') {
         $wrapped .= "<div class='muted'>Tel: " . htmlspecialchars($opticaTel, ENT_QUOTES, 'UTF-8') . "</div>";
+      }
+      if (!$gdOk && $showLogoSetting && $opticaLogo !== '') {
+        $wrapped .= "<div class='muted' style='font-size:10px'>Nota: logo omitido (PHP GD no instalado)</div>";
       }
       $wrapped .= "</div>";
       $wrapped .= "<div class='c' style='text-align:right'>";
@@ -207,52 +180,54 @@ if (!function_exists('report_export_pdf')) {
     $wrapped .= $html;
     $wrapped .= "</body></html>";
 
-    // Dompdf SIN Composer: vendor/dompdf/autoload.inc.php
+    // Dompdf sin Composer
     $autoload = __DIR__ . '/../vendor/dompdf/autoload.inc.php';
     $hasDompdf = false;
-
     if (is_file($autoload)) {
       require_once $autoload;
       $hasDompdf = class_exists('\Dompdf\Dompdf');
     }
 
     if ($hasDompdf) {
-      // Compatible con versiones viejas (sin Options)
-      if (class_exists('\Dompdf\Options')) {
-        $options = new \Dompdf\Options();
-        $options->set('isRemoteEnabled', true);
-        $options->set('dpi', 96);
-        $dompdf = new \Dompdf\Dompdf($options);
-      } else {
-        $dompdf = new \Dompdf\Dompdf();
-        if (method_exists($dompdf, 'set_option')) {
-          $dompdf->set_option('isRemoteEnabled', true);
-          $dompdf->set_option('dpi', 96);
-        }
-      }
-
-      $dompdf->setPaper($paper, $orientation);
-      $dompdf->loadHtml($wrapped, 'UTF-8');
-      $dompdf->render();
-
-      // Footer: número de página
       try {
-        $canvas = $dompdf->getCanvas();
-        $font = $dompdf->getFontMetrics()->get_font('Helvetica', 'normal');
-        // Coordenadas aproximadas para carta vertical
-        $canvas->page_text(520, 815, 'Página {PAGE_NUM} de {PAGE_COUNT}', $font, 9, [0, 0, 0]);
-      } catch (Throwable $e) {
-        // silencioso
-      }
+        if (class_exists('\Dompdf\Options')) {
+          $options = new \Dompdf\Options();
+          $options->set('isRemoteEnabled', true);
+          $options->set('dpi', 96);
+          $dompdf = new \Dompdf\Dompdf($options);
+        } else {
+          $dompdf = new \Dompdf\Dompdf();
+          if (method_exists($dompdf, 'set_option')) {
+            $dompdf->set_option('isRemoteEnabled', true);
+            $dompdf->set_option('dpi', 96);
+          }
+        }
 
-      report_no_cache_headers();
-      header('Content-Type: application/pdf');
-      header('Content-Disposition: attachment; filename="' . $filename . '"');
-      echo $dompdf->output();
-      exit;
+        $dompdf->setPaper($paper, $orientation);
+        $dompdf->loadHtml($wrapped, 'UTF-8');
+        $dompdf->render();
+
+        try {
+          $canvas = $dompdf->getCanvas();
+          $font = $dompdf->getFontMetrics()->get_font('Helvetica', 'normal');
+          $canvas->page_text(520, 815, 'Página {PAGE_NUM} de {PAGE_COUNT}', $font, 9, [0, 0, 0]);
+        } catch (Throwable $e) {
+          // silencioso
+        }
+
+        while (ob_get_level() > 0) { @ob_end_clean(); }
+        report_no_cache_headers();
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        echo $dompdf->output();
+        exit;
+      } catch (Throwable $e) {
+        // fall-through a HTML
+      }
     }
 
     // Fallback: HTML imprimible
+    while (ob_get_level() > 0) { @ob_end_clean(); }
     report_no_cache_headers();
     header('Content-Type: text/html; charset=UTF-8');
     echo "<!doctype html><html lang='es'><head><meta charset='utf-8'><title>" . htmlspecialchars($filename, ENT_QUOTES, 'UTF-8') . "</title>";
