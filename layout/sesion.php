@@ -143,15 +143,23 @@ if (!function_exists('require_admin')) {
     }
 }
 
-// después de tener $id_usuario_sesion y el email del usuario (si lo tienes)
+// Contexto para auditoría por TRIGGERS (tb_auditoria)
+// Los triggers leen variables de sesión MySQL: @app_user_id, @app_user_email, @app_ip, @app_ua
+// Esta asignación debe ejecutarse en *cada* request (en esta misma conexión).
 $uid = (int)($id_usuario_sesion ?? 0);
-$uemail = (string)($email_usuario_sesion ?? '');
+$uemail = (string)($email_sesion ?? ($_SESSION['sesion_email'] ?? ''));
 
-$ip = $_SERVER['REMOTE_ADDR'] ?? '';
-$ua = substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255);
+// IP/UA (incluye proxies) usando helpers si existen
+$ip = function_exists('sov_client_ip') ? (sov_client_ip() ?? '') : (string)($_SERVER['REMOTE_ADDR'] ?? '');
+$ua = function_exists('sov_user_agent') ? sov_user_agent() : (string)($_SERVER['HTTP_USER_AGENT'] ?? '');
+$ua = substr($ua, 0, 255);
 
-// variables de sesión MySQL (valen para esta conexión)
-$pdo->exec("SET @app_user_id = {$uid}");
-$pdo->exec("SET @app_user_email = " . $pdo->quote($uemail));
-$pdo->exec("SET @app_ip = " . $pdo->quote($ip));
-$pdo->exec("SET @app_ua = " . $pdo->quote($ua));
+try {
+    $pdo->exec('SET @app_user_id = ' . (int)$uid);
+    $pdo->exec('SET @app_user_email = ' . $pdo->quote($uemail));
+    $pdo->exec('SET @app_ip = ' . $pdo->quote($ip));
+    $pdo->exec('SET @app_ua = ' . $pdo->quote($ua));
+} catch (Throwable $e) {
+    // No romper el flujo por auditoría
+    error_log('Audit context error: ' . $e->getMessage());
+}

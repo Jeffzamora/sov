@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../app/config.php';
 require_once __DIR__ . '/../layout/sesion.php';
+
+if (function_exists('require_perm')) require_perm($pdo, 'clientes.ver', $URL . '/');
 require_once __DIR__ . '/../layout/parte1.php';
 
 require_once __DIR__ . '/../app/controllers/clientes/listado_de_clientes.php';

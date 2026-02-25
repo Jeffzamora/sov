@@ -5,6 +5,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../../../layout/sesion.php';
 
+if (function_exists('require_perm')) require_perm($pdo, 'almacen.ver', $URL . '/');
+
 function sov_json(int $code, array $payload): void
 {
     http_response_code($code);

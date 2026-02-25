@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../../app/config.php';
 require_once __DIR__ . '/../../layout/sesion.php';
 
+if (function_exists('require_perm')) require_perm($pdo, 'examenes.ver', $URL . '/');
+
 $id_cliente = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 try {

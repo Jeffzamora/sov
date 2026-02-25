@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../../../layout/sesion.php';
 
+if (function_exists('require_perm')) require_perm($pdo, 'examenes.crear', $URL . '/');
+
 require_post();
 csrf_verify();
 

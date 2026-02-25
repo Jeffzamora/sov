@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../app/config.php';
 require_once __DIR__ . '/../layout/sesion.php';
+
+if (function_exists('require_perm')) require_perm($pdo, 'reportes.ver', $URL . '/');
 require_once __DIR__ . '/../layout/parte1.php';
 
 function h($v): string

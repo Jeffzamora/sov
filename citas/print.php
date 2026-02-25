@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../app/config.php';
 require_once __DIR__ . '/../layout/sesion.php';
 
+if (function_exists('require_perm')) require_perm($pdo, 'citas.ver', $URL . '/');
+
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($id <= 0) { http_response_code(404); echo 'Cita no válida.'; exit; }
 

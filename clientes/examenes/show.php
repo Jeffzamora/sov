@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../../app/config.php';
 require_once __DIR__ . '/../../layout/sesion.php';
+
+if (function_exists('require_perm')) require_perm($pdo, 'examenes.ver', $URL . '/');
 require_once __DIR__ . '/../../layout/parte1.php';
 
 $id_examen = isset($_GET['id_examen']) ? (int)$_GET['id_examen'] : 0;

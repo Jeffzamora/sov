@@ -3,7 +3,7 @@ require_once __DIR__ . '/../app/config.php';
 require_once __DIR__ . '/../layout/sesion.php';
 
 // (Opcional) Permiso
-// require_perm($pdo, 'categorias.ver', $URL . '/index.php');
+require_perm($pdo, 'categorias.ver', $URL . '/index.php');
 
 require_once __DIR__ . '/../layout/parte1.php';
 require_once __DIR__ . '/../app/controllers/categorias/listado_de_categoria.php';

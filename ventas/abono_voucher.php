@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../app/config.php';
 require_once __DIR__ . '/../layout/sesion.php';
 
+if (function_exists('require_perm')) require_perm($pdo, 'ventas.pagos', $URL . '/');
+
 $id_pago = (int)($_GET['id_pago'] ?? 0);
 if ($id_pago <= 0) {
   http_response_code(404);

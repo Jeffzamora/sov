@@ -4,6 +4,8 @@ declare(strict_types=1);
 $BASE_DIR = dirname(__DIR__);
 require_once $BASE_DIR . '/app/config.php';
 require_once $BASE_DIR . '/layout/sesion.php';
+
+if (function_exists('require_perm')) require_perm($pdo, 'reportes.ver', $URL . '/');
 function h($v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 
 // Filtros

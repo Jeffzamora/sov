@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../app/config.php';
 require_once __DIR__ . '/../layout/sesion.php';
 
+if (function_exists('require_perm')) require_perm($pdo, 'almacen.actualizar', $URL . '/');
+
 require_once __DIR__ . '/../layout/parte1.php';
 require_once __DIR__ . '/../app/controllers/categorias/listado_de_categoria.php';
 require_once __DIR__ . '/../app/controllers/almacen/cargar_producto.php';

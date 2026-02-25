@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../../config.php';
 require_once __DIR__ . '/../../../layout/sesion.php';
+
+if (function_exists('require_perm')) require_perm($pdo, 'cajas.ver', $URL . '/');
 require_once __DIR__ . '/_caja_lib.php';
 
 header('Content-Type: application/json; charset=utf-8');

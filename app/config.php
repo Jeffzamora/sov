@@ -42,10 +42,6 @@ function sov_load_env(string $path): void
 
 sov_load_env(__DIR__ . '/.env'); // opcional: crea app/.env en prod y local
 
-// Helpers externos (sin Composer)
-require_once __DIR__ . '/Helpers/db_schema.php';
-require_once __DIR__ . '/Helpers/settings.php';
-
 // --- DB ---
 define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
 define('DB_PORT', getenv('DB_PORT') ?: '3306');
@@ -768,42 +764,14 @@ if (!function_exists('delete_product_image_files')) {
 function optica_info(): array
 {
     global $URL;
-
-    // Defaults (fallback si aún no creaste tb_settings)
-    $defaults = [
-        'brand.name' => 'Óptica Alta Vision',
-        'brand.phone' => '+505 8173 1664',
-        'brand.address' => 'Cruz Blanca 25 Vrs al Sur',
-        'brand.web' => '',
-        'brand.ruc' => 'Ruc: 4020809910000X',
-        'brand.logo_path' => 'public/images/optica/logo_bajo.png',
-        'brand.favicon_path' => 'public/images/optica/favicon.png',
-        'brand.app_icon_path' => 'public/images/optica/icon_alto.png',
-        'brand.primary_color' => '#0b2a4a',
-    ];
-
-    // Nota: setting() usa cache y no rompe si la tabla no existe.
-    $logoRel = (string)setting('brand.logo_path', $defaults['brand.logo_path']);
-    $favRel  = (string)setting('brand.favicon_path', $defaults['brand.favicon_path']);
-    $iconRel = (string)setting('brand.app_icon_path', $defaults['brand.app_icon_path']);
-
-    $toUrl = function (string $rel) use ($URL): string {
-        $rel = ltrim($rel, '/');
-        if ($rel === '') return '';
-        if (preg_match('~^https?://~i', $rel)) return $rel;
-        return rtrim((string)$URL, '/') . '/' . $rel;
-    };
-
     return [
-        'nombre'    => (string)setting('brand.name', $defaults['brand.name']),
-        'telefono'  => (string)setting('brand.phone', $defaults['brand.phone']),
-        'direccion' => (string)setting('brand.address', $defaults['brand.address']),
-        'web'       => (string)setting('brand.web', $defaults['brand.web']),
-        'ruc'       => (string)setting('brand.ruc', $defaults['brand.ruc']),
-        'logo'      => $toUrl($logoRel),
-        'favicon'   => $toUrl($favRel),
-        'icon'      => $toUrl($iconRel),
-        'color'     => (string)setting('brand.primary_color', $defaults['brand.primary_color']),
+        'nombre'    => 'Óptica Alta Vision',
+        'telefono'  => '+505 8173 1664',
+        'direccion' => 'Cruz Blanca 25 Vrs al Sur',
+        'web'       => '',
+        'ruc'       => 'Ruc: 4020809910000X',
+        'logo'      => $URL . '/public/images/optica/logo_bajo.png',
+        'favicon'   => $URL . '/public/images/optica/favicon.png',
     ];
 }
 
@@ -994,9 +962,17 @@ if (!function_exists('require_perm')) {
      */
     function require_perm(PDO $pdo, string $perm, string $redirectTo): void
     {
-        if (!ui_can($perm)) {
-            redirect($redirectTo, 'Acceso denegado.', 'danger');
+        if (ui_can($perm)) return;
+
+        // AJAX/JSON: responder 403 para evitar HTML en fetch/select2
+        if (function_exists('is_ajax_request') && is_ajax_request()) {
+            http_response_code(403);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['ok' => false, 'error' => 'Acceso denegado.', 'perm' => $perm], JSON_UNESCAPED_UNICODE);
+            exit;
         }
+
+        redirect($redirectTo, 'Acceso denegado.', 'danger');
     }
 }
 
@@ -1013,6 +989,13 @@ if (!function_exists('require_admin')) {
 
         $rol = strtoupper((string)($_SESSION['sesion_rol_nombre'] ?? ''));
         if ($rol === 'ADMINISTRADOR') return;
+
+        if (function_exists('is_ajax_request') && is_ajax_request()) {
+            http_response_code(403);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['ok' => false, 'error' => 'Solo ADMINISTRADOR.'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
 
         redirect($redirectTo, 'Solo ADMINISTRADOR.', 'danger');
     }

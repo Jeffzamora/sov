@@ -6,6 +6,8 @@ $BASE_DIR = dirname(__DIR__);
 require_once $BASE_DIR . '/app/config.php';
 require_once $BASE_DIR . '/layout/sesion.php';
 
+if (function_exists('require_perm')) require_perm($pdo, 'reportes.ver', $URL . '/');
+
 require_once $BASE_DIR . '/layout/parte1.php';
 
 function h($v): string
